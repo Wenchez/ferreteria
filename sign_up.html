@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+</head>
+<body>
+    <form action="PHP/insertar.php" method="POST">
+        <div>
+            <label for="username">USUARIO:</label><br>
+            <input type="text" id="username" name="username" placeholder="tu usuario" required>
+        </div>
+        <br>
+        <div>
+            <label for="password">CONTRASEÑA:</label><br>
+            <input type="password" id="password" name="password" placeholder="tu password" required>
+        </div>
+        <br>
+        <div>
+            <label for="email">EMAIL:</label><br>
+            <input type="email" id="email" name="email" placeholder="tu email" required>
+        </div>
+        <br>
+        <div>
+            <label for="rol">ROL:</label><br>
+            <select id="rol" name="rol">
+                <option value="admin">Administrador</option>
+                <option value="ventas">Vendedor</option>
+            </select>
+        </div>
+        <br>
+        <div>
+            <button id="submit" type="submit">Guardar</button>
+        </div>
+    </form>
+    <p><a href="login.html" class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Ir a login</a></p>
+</body>
+</html>

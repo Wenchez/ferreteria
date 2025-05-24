@@ -20,7 +20,6 @@ if (!isset($_SESSION['UserID'])) {
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <script src="JS/bootstrap.bundle.js"></script>
 
-    <script src="login.js"></script>
 </head>
 <body class="bg-light d-flex justify-content-center align-items-center min-vh-100">
     <div class="card p-4 shadow-lg text-center" style="max-width: 400px;">

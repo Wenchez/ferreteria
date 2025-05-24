@@ -22,7 +22,7 @@ function login(event) {
     // Realiza la petición AJAX
     $.ajax({
         type: "POST",
-        url: "../PHP/login.php",
+        url: "PHP/login.php",
         data: formData,
         dataType: "json",
         success: function (response) {

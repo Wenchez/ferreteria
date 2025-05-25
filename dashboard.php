@@ -19,55 +19,14 @@ if (!isset($_SESSION['UserID'])) {
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <script src="JS/jquery-3.7.1.js"></script>
     <script src="JS/bootstrap.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
     <div class="d-flex">
         <!-- Sidebar -->
-        <nav id="sidebar" class="bg-dark text-white flex-shrink-0 p-3" style="width: 250px; min-height: 100vh; transition: width 0.3s;">
-            <div class="d-flex align-items-center mb-4">
-                <button class="btn btn-outline-light me-2" id="toggleSidebar" aria-label="Menú">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <span class="fs-4 fw-bold">Ferretería</span>
-            </div>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link active bg-primary text-white">
-                        <i class="bi bi-house-door me-2"></i> <span class="sidebar-text">Inicio</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="modulos/productos.php" class="nav-link text-white">
-                        <i class="bi bi-box-seam me-2"></i> <span class="sidebar-text">Productos</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="modulos/ventas.php" class="nav-link text-white">
-                        <i class="bi bi-cart me-2"></i> <span class="sidebar-text">Ventas</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="modulos/clientes.php" class="nav-link text-white">
-                        <i class="bi bi-people me-2"></i> <span class="sidebar-text">Clientes</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="modulos/reportes.php" class="nav-link text-white">
-                        <i class="bi bi-bar-chart me-2"></i> <span class="sidebar-text">Reportes</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="modulos/proveedores.php" class="nav-link text-white">
-                        <i class="bi bi-truck me-2"></i> <span class="sidebar-text">Proveedores</span>
-                    </a>
-                </li>
-                <li class="nav-item mt-3">
-                    <a href="PHP/logout.php" class="nav-link text-danger">
-                        <i class="bi bi-box-arrow-right me-2"></i> <span class="sidebar-text">Cerrar Sesión</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <?php
+            include_once "components/sidebar.html";
+        ?>
         <!-- Main Content -->
         <div id="mainContent" class="flex-grow-1 p-4" style="transition: margin-left 0.3s;">
             <div class="container-fluid">
@@ -123,21 +82,5 @@ if (!isset($_SESSION['UserID'])) {
             </div>
         </div>
     </div>
-    <!-- Bootstrap Icons CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <script>
-        // Sidebar toggle
-        $('#toggleSidebar').on('click', function() {
-            $('#sidebar').toggleClass('collapsed');
-            $('.sidebar-text').toggleClass('d-none');
-            if ($('#sidebar').hasClass('collapsed')) {
-                $('#sidebar').css('width', '70px');
-                $('#mainContent').css('margin-left', '70px');
-            } else {
-                $('#sidebar').css('width', '250px');
-                $('#mainContent').css('margin-left', '0');
-            }
-        });
-    </script>
 </body>
 </html>

@@ -56,6 +56,11 @@ if (!isset($_SESSION['UserID'])) {
                         <i class="bi bi-bar-chart me-2"></i> <span class="sidebar-text">Reportes</span>
                     </a>
                 </li>
+                <li class="nav-item mb-2">
+                    <a href="modulos/proveedores.php" class="nav-link text-white">
+                        <i class="bi bi-truck me-2"></i> <span class="sidebar-text">Proveedores</span>
+                    </a>
+                </li>
                 <li class="nav-item mt-3">
                     <a href="PHP/logout.php" class="nav-link text-danger">
                         <i class="bi bi-box-arrow-right me-2"></i> <span class="sidebar-text">Cerrar Sesión</span>

@@ -14,6 +14,7 @@ if (!isset($_SESSION['UserID'])) {
     <script src="../JS/jquery-3.7.1.js"></script>
     <script src="../JS/bootstrap.bundle.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="../JS/proveedores/addProveedores.js"></script>
 </head>
 <body class="bg-light d-flex">
     <!-- Sidebar -->

@@ -14,6 +14,8 @@ if (!isset($_SESSION['UserID'])) {
     <script src="../JS/jquery-3.7.1.js"></script>
     <script src="../JS/bootstrap.bundle.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <script src="../JS/ventas/getVentas.js"></script>
 </head>
 <body class="bg-light d-flex">
     <!-- Sidebar -->
@@ -22,17 +24,115 @@ if (!isset($_SESSION['UserID'])) {
         include_once "../components/sidebar.php";
     ?>
     <!-- Main Content -->
-     <div class="flex-grow-1 p-4">
-        <div class="container py-4">
-            <h2 class="mb-4 text-secondary"><i class="bi bi-bar-chart"></i> Reportes</h2>
-            <div class="card">
-                <div class="card-body">
-                    <p class="mb-0">Aquí puedes consultar reportes de ventas, productos y clientes.</p>
-                    <!-- Aquí irían los reportes y filtros -->
+    <div class="flex-grow-1 p-4">
+        <div class="container-fluid py-4">
+            <div class="row">
+                <div class="d-flex justify-content-between align-items-center col-12">
+                    <h2 class="text-secondary"><i class="bi bi-bar-chart"></i> Reportes</h2>
+                </div>
+            </div>
+            <!-- Base de datos a usar -->
+            <?php 
+            include_once "../components/changeDB.html"; 
+            ?>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title text-secondary"><i class="bi bi-receipt"></i> Ventas realizadas</h2>
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th scope="col">Fecha</th>
+                                        <th scope="col">Vendedor</th>
+                                        <th scope="col">Cliente</th>
+                                        <th scope="col">Productos (cant.)</th>
+                                        <th scope="col">Subtotal</th>
+                                        <th scope="col">Total</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="detailSaleModal" tabindex="-1" aria-labelledby="detailSaleModalLabel">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailSaleModalLabel">Detalles de venta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3 row">
+                                <label for="ticketNumber" class="col-sm-4 col-form-label">TICKET:</label>
+                                <div class="col-sm-8">
+                                    <input type="text" readonly class="form-control-plaintext" id="ticketNumber" value="">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="saleDate" class="col-sm-4 col-form-label">FECHA:</label>
+                                <div class="col-sm-8">
+                                    <input type="text" readonly class="form-control-plaintext" id="saleDate" value="">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="saleTime" class="col-sm-4 col-form-label">HORA:</label>
+                                <div class="col-sm-8">
+                                    <input type="text" readonly class="form-control-plaintext" id="saleTime" value="">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="seller" class="col-sm-4 col-form-label">VENDEDOR:</label>
+                                <div class="col-sm-8">
+                                    <input type="text" readonly class="form-control-plaintext" id="seller" value="">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="client" class="col-sm-4 col-form-label">CLIENTE:</label>
+                                <div class="col-sm-8">
+                                    <input type="text" readonly class="form-control-plaintext" id="client" value="">
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h6>PRODUCTOS:</h6>
+                            <div id="productDetailsContainer">
+                                </div>
+
+                            <hr>
+
+                            <div class="mb-2 row">
+                                <label for="subtotal" class="col-sm-4 col-form-label">SUBTOTAL:</label>
+                                <div class="col-sm-8 text-end">
+                                    <input type="text" readonly class="form-control-plaintext" id="subtotal" value="">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="iva" class="col-sm-4 col-form-label">IVA (16%):</label>
+                                <div class="col-sm-8 text-end">
+                                    <input type="text" readonly class="form-control-plaintext" id="iva" value="">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="total" class="col-sm-4 col-form-label fw-bold">TOTAL:</label>
+                                <div class="col-sm-8 text-end">
+                                    <input type="text" readonly class="form-control-plaintext fw-bold" id="total" value="">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <h5>Compra registrada</h5>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
 </body>
 </html>

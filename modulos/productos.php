@@ -49,21 +49,26 @@ if (!isset($_SESSION['UserID'])) {
             <!-- Tabla de productos -->
             <div class="row">
                 <div class="col-12">
-                    <table class="table table-bordered align-middle">
-                        <thead>
-                            <tr>
-                                <th scope="col-3">Producto</th>
-                                <th scope="col-2">Categoria</th>
-                                <th scope="col-1">Precio</th>
-                                <th scope="col-1">Stock</th>
-                                <th scope="col-2">Proveedor</th>
-                                <th scope="col-1">Estado</th>
-                                <th scope="col-2">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title text-primary"><i class="bi bi-receipt"></i> Inventario</h2>
+                            <table class="table table-bordered align-middle">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th scope="col">Producto</th>
+                                    <th scope="col">Categoria</th>
+                                    <th scope="col">Precio</th>
+                                    <th scope="col">Stock</th>
+                                    <th scope="col">Proveedor</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Modal de crear producto -->

@@ -1,29 +1,31 @@
 <div class="row my-5">
-    <div class="card shadow-sm p-4">
-        <div class="d-flex align-items-center mb-3">
-            <i class="bi bi-database fs-3 me-2 text-dark"></i>
-            <h3 class="mb-0 text-dark">Configuración de Base de Datos</h3>
-        </div>
-        <p class="text-muted mb-4">Selecciona el tipo de base de datos a utilizar</p>
-
-        <div class="mb-3">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="databaseType" id="localDb" value="local" checked>
-                <label class="form-check-label" for="localDb">
-                    <i class="bi bi-hdd-fill me-1"></i> Base de Datos Local
-                </label>
+    <div class="col-12">
+        <div class="card shadow-sm p-4">
+            <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-database fs-3 me-2 text-dark"></i>
+                <h3 class="mb-0 text-dark">Configuración de Base de Datos</h3>
             </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="databaseType" id="remoteDb" value="remote">
-                <label class="form-check-label" for="remoteDb">
-                    <i class="bi bi-cloud-fill me-1"></i> Base de Datos Remota
-                </label>
-            </div>
-        </div>
+            <p class="text-muted mb-4">Selecciona el tipo de base de datos a utilizar</p>
 
-        <p id="connectionStatus" class="text-success small">
-            <i class="bi bi-check-circle-fill me-1"></i> Usando almacenamiento local del navegador
-        </p>
+            <div class="mb-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="databaseType" id="localDb" value="local" checked>
+                    <label class="form-check-label" for="localDb">
+                        <i class="bi bi-hdd-fill me-1"></i> Base de Datos Local
+                    </label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="databaseType" id="remoteDb" value="remote">
+                    <label class="form-check-label" for="remoteDb">
+                        <i class="bi bi-cloud-fill me-1"></i> Base de Datos Remota
+                    </label>
+                </div>
+            </div>
+
+            <p id="connectionStatus" class="text-success small">
+                <i class="bi bi-check-circle-fill me-1"></i> Usando almacenamiento local del navegador
+            </p>
+        </div>
     </div>
 </div>
 

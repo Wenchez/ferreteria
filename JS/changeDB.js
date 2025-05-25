@@ -3,7 +3,6 @@ $(document).ready(function () {
 
     $('input[name="databaseType"]').on("change", function () {
         updateConnectionStatus();
-        getProductos();
     });
 });
 

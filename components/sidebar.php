@@ -10,7 +10,7 @@
                 <button class="btn btn-outline-light me-2" id="toggleSidebar" aria-label="Menú">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <span class="fs-4 fw-bold">Ferretería</span>
+                <span id="title-side" class="fs-4 fw-bold">Ferretería</span>
             </div>
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item mb-2">
@@ -58,9 +58,11 @@
                 $('#sidebar').toggleClass('collapsed');
                 $('.sidebar-text').toggleClass('d-none');
                 if ($('#sidebar').hasClass('collapsed')) {
-                    $('#sidebar').css('width', '70px');
+                    $('#title-side').addClass('d-none');
+                    $('#sidebar').css('width', '80px');
                     $('#mainContent').css('margin-left', '70px');
                 } else {
+                    $('#title-side').removeClass('d-none');
                     $('#sidebar').css('width', '250px');
                     $('#mainContent').css('margin-left', '0');
                 }

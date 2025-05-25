@@ -25,7 +25,8 @@ if (!isset($_SESSION['UserID'])) {
     <div class="d-flex">
         <!-- Sidebar -->
         <?php
-            include_once "components/sidebar.html";
+            $activePage = 'dashboard';
+            include_once "components/sidebar.php";
         ?>
         <!-- Main Content -->
         <div id="mainContent" class="flex-grow-1 p-4" style="transition: margin-left 0.3s;">

@@ -18,7 +18,8 @@ if (!isset($_SESSION['UserID'])) {
 <body class="bg-light d-flex">
     <!-- Sidebar -->
     <?php
-        include_once "../components/sidebar.html";
+        $activePage = 'reportes';
+        include_once "../components/sidebar.php";
     ?>
     <!-- Main Content -->
      <div class="flex-grow-1 p-4">

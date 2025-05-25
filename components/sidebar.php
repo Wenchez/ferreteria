@@ -1,3 +1,10 @@
+<?php
+    function active($mod) {
+        global $activePage;
+        return $activePage === $mod ? 'active bg-primary' : '';
+    }
+?>
+
         <nav id="sidebar" class="bg-dark text-white flex-shrink-0 p-3" style="width: 250px; min-height: 100vh; transition: width 0.3s;">
             <div class="d-flex align-items-center mb-4">
                 <button class="btn btn-outline-light me-2" id="toggleSidebar" aria-label="Menú">
@@ -7,32 +14,32 @@
             </div>
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item mb-2">
-                    <a href="/ferreteria/dashboard.php" class="nav-link active bg-primary text-white">
+                    <a href="/ferreteria/dashboard.php" class="nav-link text-white <?= active('dashboard') ?>">
                         <i class="bi bi-house-door me-2"></i> <span class="sidebar-text">Inicio</span>
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="/ferreteria/modulos/productos.php" class="nav-link text-white">
+                    <a href="/ferreteria/modulos/productos.php" class="nav-link text-white <?= active('productos') ?>">
                         <i class="bi bi-box-seam me-2"></i> <span class="sidebar-text">Productos</span>
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="/ferreteria/modulos/ventas.php" class="nav-link text-white">
+                    <a href="/ferreteria/modulos/ventas.php" class="nav-link text-white <?= active('ventas') ?>">
                         <i class="bi bi-cart me-2"></i> <span class="sidebar-text">Ventas</span>
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="/ferreteria/modulos/clientes.php" class="nav-link text-white">
+                    <a href="/ferreteria/modulos/clientes.php" class="nav-link text-white <?= active('clientes') ?>">
                         <i class="bi bi-people me-2"></i> <span class="sidebar-text">Clientes</span>
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="/ferreteria/modulos/reportes.php" class="nav-link text-white">
+                    <a href="/ferreteria/modulos/reportes.php" class="nav-link text-white <?= active('reportes') ?>">
                         <i class="bi bi-bar-chart me-2"></i> <span class="sidebar-text">Reportes</span>
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="/ferreteria/modulos/proveedores.php" class="nav-link text-white">
+                    <a href="/ferreteria/modulos/proveedores.php" class="nav-link text-white <?= active('proveedores') ?>">
                         <i class="bi bi-truck me-2"></i> <span class="sidebar-text">Proveedores</span>
                     </a>
                 </li>
@@ -43,6 +50,7 @@
                 </li>
             </ul>
         </nav>
+
 
         <script>
             // Sidebar toggle

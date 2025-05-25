@@ -15,14 +15,21 @@ if (!isset($_SESSION['UserID'])) {
     <script src="../JS/bootstrap.bundle.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
-<body class="bg-light">
-    <div class="container py-4">
-        <a href="../dashboard.php" class="btn btn-secondary mb-3"><i class="bi bi-arrow-left"></i> Volver</a>
-        <h2 class="mb-4 text-success"><i class="bi bi-cart"></i> Ventas</h2>
-        <div class="card">
-            <div class="card-body">
-                <p class="mb-0">Aquí puedes registrar y consultar las ventas realizadas.</p>
-                <!-- Aquí iría la tabla/listado de ventas y botones para agregar/editar/eliminar -->
+<body class="bg-light d-flex">
+    <!-- Sidebar -->
+    <?php
+        $activePage = 'ventas';
+        include_once "../components/sidebar.php";
+    ?>
+    <!-- Main Content -->
+     <div class="flex-grow-1 p-4">
+        <div class="container py-4">
+            <h2 class="mb-4 text-success"><i class="bi bi-cart"></i> Ventas</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p class="mb-0">Aquí puedes registrar y consultar las ventas realizadas.</p>
+                    <!-- Aquí iría la tabla/listado de ventas y botones para agregar/editar/eliminar -->
+                </div>
             </div>
         </div>
     </div>

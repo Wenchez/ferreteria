@@ -10,11 +10,7 @@ if (!isset($_SESSION['UserID'])) {
 <head>
     <meta charset="UTF-8">
     <title>Productos - Ferretería</title>
-    <link rel="stylesheet" href="../CSS/bootstrap.css">
-    <script src="../JS/jquery-3.7.1.js"></script>
-    <script src="../JS/bootstrap.bundle.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
+    <?php include "../components/header.html" ?>
     <script src="../JS/productos/addProductos.js"></script>
     <script src="../JS/productos/getProductos.js"></script>
     <script src="../JS/productos/modProductos.js"></script>

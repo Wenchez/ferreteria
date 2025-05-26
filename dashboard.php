@@ -38,7 +38,7 @@ if (!isset($_SESSION['UserID'])) {
                     </div>
                 </div>
                 <div class="row g-4">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card h-100 shadow-sm">
                             <div class="card-body text-center">
                                 <div class="mb-3">
@@ -50,7 +50,7 @@ if (!isset($_SESSION['UserID'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card h-100 shadow-sm">
                             <div class="card-body text-center">
                                 <div class="mb-3">
@@ -62,7 +62,7 @@ if (!isset($_SESSION['UserID'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="card h-100 shadow-sm">
                             <div class="card-body text-center">
                                 <div class="mb-3">
@@ -71,6 +71,18 @@ if (!isset($_SESSION['UserID'])) {
                                 <h5 class="card-title">Clientes</h5>
                                 <p class="card-text">Gestiona la información de tus clientes.</p>
                                 <a href="modulos/clientes.php" class="btn btn-outline-primary btn-sm">Ver clientes</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-truck fs-1 text-warning"></i>
+                                </div>
+                                <h5 class="card-title">Proveedores</h5>
+                                <p class="card-text">Gestiona la información de tus proveedores.</p>
+                                <a href="modulos/proveedores.php" class="btn btn-outline-primary btn-sm">Ver proveedores</a>
                             </div>
                         </div>
                     </div>

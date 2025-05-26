@@ -38,7 +38,7 @@ function addProduct(productName, category, supplierName, stock, price){
         data: datos,
         success: function(response) {
             if (response.status === "success") {
-                console.log("Modificación exitosa:", response.mensaje_local, response.mensaje_remoto);
+                console.log("Creacion exitosa:", response.mensaje_local, response.mensaje_remoto);
                 $('#addProductModal').modal('hide');
                 getProductos();
                 // - Mostrar una alerta o notificación al usuario

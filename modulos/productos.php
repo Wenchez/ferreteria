@@ -49,7 +49,7 @@ if (!isset($_SESSION['UserID'])) {
             <!-- Tabla de productos -->
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card shadow">
                         <div class="card-body">
                             <h2 class="card-title text-primary"><i class="bi bi-receipt"></i> Inventario</h2>
                             <table class="table table-bordered align-middle">

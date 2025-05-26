@@ -16,6 +16,7 @@ if (!isset($_SESSION['UserID'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <script src="../JS/ventas/getVentas.js"></script>
+    <script src="../JS/ventas/deleteVentas.js"></script>
 </head>
 <body class="bg-light d-flex">
     <!-- Sidebar -->
@@ -37,7 +38,7 @@ if (!isset($_SESSION['UserID'])) {
             ?>
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card shadow">
                         <div class="card-body">
                             <h2 class="card-title text-secondary"><i class="bi bi-receipt"></i> Ventas realizadas</h2>
                             <table class="table table-bordered align-middle">

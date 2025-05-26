@@ -15,11 +15,6 @@ $(document).ready(function () {
         console.log("ID del producto a editar:", productId);
         getProductoByID(productId);
     });
-
-    $(document).on("click", ".btn-eliminar", function () {
-        const productId = $(this).closest("tr").data("id");
-        console.log("ID del producto a eliminar:", productId);
-    });
 });
 
 function getProductos(){
@@ -96,26 +91,6 @@ function getProductos(){
 }
 
 function getProductoByID(productId){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
-    $.get('/ferreteria/PHP/controladores/productos/getProductos.php', { db_choice: dbChoice, action:'getProductById', productId:productId }, function() {
-    })
-    .done(function(response){
-        console.log("Productos recibidos:", response.producto);
-        console.log("Usando:", response.db);
-        // Asignar los valores a los inputs del formulario
-        $("#editProductName").val(response.producto.productName);
-        $("#editSupplierName").val(response.producto.supplierName);
-        $("#editCategory").val(response.producto.category);
-        $("#editStock").val(response.producto.stock);
-        $("#editPrice").val(response.producto.price);
-    })
-    .fail(function(jqXHR, textStatus, errorThrown) {
-        console.error("Error al obtener productos:", textStatus, errorThrown);
-        console.error("Respuesta del servidor:", jqXHR.responseText);
-    });
-}
-
-function getVentaByID(productId){
     const dbChoice = $('input[name="databaseType"]:checked').val();
     $.get('/ferreteria/PHP/controladores/productos/getProductos.php', { db_choice: dbChoice, action:'getProductById', productId:productId }, function() {
     })

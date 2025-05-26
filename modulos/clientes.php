@@ -32,8 +32,8 @@ if (!isset($_SESSION['UserID'])) {
         <div class="container-fluid py-4">
             <div class="row">
                 <div class="d-flex justify-content-between align-items-center col-12">
-                    <h2 class="text-primary"><i class="bi bi-people"></i> Clientes</h2>
-                    <button id="add_Client" class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                    <h2 class="text-info"><i class="bi bi-people"></i> Clientes</h2>
+                    <button id="add_Client" class="btn btn-info d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addClientModal">
                         <i class="bi bi-plus me-2"></i> Añadir cliente
                     </button>
                 </div>
@@ -47,9 +47,9 @@ if (!isset($_SESSION['UserID'])) {
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title text-primary"><i class="bi bi-people"></i> Lista de Clientes</h2>
+                            <h2 class="card-title text-info"><i class="bi bi-people"></i> Lista de Clientes</h2>
                             <table class="table table-bordered align-middle">
-                                <thead class="table-primary">
+                                <thead class="table-info">
                                     <tr>
                                         <th scope="col">Nombre</th>
                                         <th scope="col">Teléfono</th>

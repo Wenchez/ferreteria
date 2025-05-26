@@ -104,6 +104,31 @@
                 'db' => $connectionType
             ]);
             exit;
+        } elseif ($action === "getProductByName") {
+            // Caso 2: devolver un solo producto según su ID
+            $productName = $_GET['productName'] ?? '';
+            if (empty($productName)) {
+                http_response_code(400);
+                echo json_encode(["error" => "No se proporcionó productName"]);
+                exit;
+            }
+
+            // Construir el filtro y los datos a actualizar
+            $filtro = ['productName' => $productName];
+            $producto = $coleccion->findOne($filtro);
+
+            if (!$producto) {
+                http_response_code(404);
+                echo json_encode(["error" => "Producto no encontrado"]);
+                exit;
+            }
+
+            echo json_encode([
+                'productName' => $productName,
+                'producto' => $producto,
+                'db' => $connectionType
+            ]);
+            exit;
         }
         else {
             http_response_code(400);

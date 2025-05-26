@@ -6,6 +6,7 @@ $(document).ready(function () {
             console.error("ID no válido para eliminar.");
             return;
         }else{
+            console.log(productId);
             deleteProducto(productId);
         }
     });

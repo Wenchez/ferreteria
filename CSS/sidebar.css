@@ -1,0 +1,62 @@
+#inicio:hover{
+    background-color: rgb(255, 255, 255);
+    color: black !important;
+}
+
+#productos:hover{
+    background-color: rgb(13 110 253);
+}
+
+#ventas:hover{
+    background-color: rgb(25 135 84);
+}
+
+#clientes:hover{
+    background-color: rgb(13 202 240);
+}
+
+#reportes:hover{
+    background-color: rgb(108 117 125);
+}
+
+#proveedores:hover{
+    background-color: rgb(255 193 7);
+    color: black !important;
+}
+
+#cerrar:hover{
+    background-color: rgb(255, 102, 102);
+    color: white !important;
+}
+
+#inicio:hover,
+#inicio.active {
+    background-color: rgb(255, 255, 255) !important;
+    color: black !important;
+}
+
+#productos:hover,
+#productos.active {
+    background-color: rgb(13 110 253) !important;
+}
+
+#ventas:hover,
+#ventas.active {
+    background-color: rgb(25 135 84) !important;
+}
+
+#clientes:hover,
+#clientes.active {
+    background-color: rgb(13 202 240) !important;
+}
+
+#reportes:hover,
+#reportes.active {
+    background-color: rgb(108 117 125) !important;
+}
+
+#proveedores:hover,
+#proveedores.active {
+    background-color: rgb(255 193 7) !important;
+    color: black !important;
+}

@@ -228,14 +228,18 @@ function setupPaymentButtonControl() {
 
     function updateButtonState() {
         const clientEmpty = $.trim($clientInput.val()) === "";
-        const itemsEmpty = $itemsBody.find('tr').length === 0;
+
+        // Solo contar filas que NO sean el mensaje de "Agregue un producto"
+        const productRows = $itemsBody.find('tr').not('.mensaje-productos');
+        const itemsEmpty = productRows.length === 0;
+
         $paymentButton.prop('disabled', clientEmpty || itemsEmpty);
     }
 
     $clientInput.on('input', updateButtonState);
 
     const observer = new MutationObserver(updateButtonState);
-    observer.observe($itemsBody[0], { childList: true });
+    observer.observe($itemsBody[0], { childList: true, subtree: true });
 
     updateButtonState(); // Verificar al cargar
 }

@@ -33,11 +33,11 @@ $(document).ready(function () {
     });
 });
 
-function getventas(){
+function getventas() {
     const dbChoice = $('input[name="databaseType"]:checked').val();
-    $.get('/ferreteria/PHP/controladores/ventas/getVentas.php', { db_choice: dbChoice, action:'getSales' }, function() {
-    })
-    .done(function(response){
+    $.get('/ferreteria/PHP/controladores/ventas/getVentas.php', 
+          { db_choice: dbChoice, action: 'getSales' })
+    .done(function(response) {
         console.log("ventas recibidos:", response.ventas);
         console.log("Usando:", response.db);
 
@@ -61,31 +61,45 @@ function getventas(){
             $tr.append($("<td>").text(venta.clientName));
 
             // Cantidad total de productos vendidos (sumamos las cantidades de todos los items)
-            const cantidadProductos = venta.items.reduce((sum, item) => sum + item.quantity, 0);
+            const cantidadProductos = venta.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
             $tr.append($("<td>").text(cantidadProductos));
 
-            // Subtotal (sumamos los subTotales de todos los productos)
-            const subTotal = venta.items.reduce((sum, item) => sum + item.subTotal, 0);
-            $tr.append($("<td>").addClass("text-nowrap").text(`$${venta.subTotal.toFixed(2)}`));
+            // SUBTOTAL: si existe venta.subTotal, lo usamos; si no, lo sumamos de los ítems
+            let subTotalValue;
+            if (venta.subTotal !== undefined && venta.subTotal !== null) {
+                subTotalValue = parseFloat(venta.subTotal);
+            } else {
+                subTotalValue = venta.items
+                    .reduce((sum, item) => sum + (parseFloat(item.subTotal) || 0), 0);
+            }
+            $tr.append(
+                $("<td>")
+                    .addClass("text-nowrap")
+                    .text(`$${subTotalValue.toFixed(2)}`)
+            );
 
-            // Total
-            $tr.append($("<td>").addClass("text-nowrap").text(`$${venta.total.toFixed(2)}`));
+            // TOTAL (se asume que siempre existe venta.total)
+            const totalValue = parseFloat(venta.total || subTotalValue);
+            $tr.append(
+                $("<td>")
+                    .addClass("text-nowrap")
+                    .text(`$${totalValue.toFixed(2)}`)
+            );
 
             // Acciones (botones)
             const $accionesTd = $("<td>").addClass("d-flex text-wrap");
-            const $btnDetalles = $('<button class="btn btn-success me-1 btn-detalle" data-id="'+venta._id +'" data-bs-toggle="modal" data-bs-target="#detailSaleModal">Detalles</button>');
-            //const $btnEditar = $('<button class="btn btn-primary me-1 btn-editar" data-id="'+venta._id +'">Editar</button>');
-            const $btnEliminar = $('<button class="btn btn-danger btn-eliminar" data-id="' +venta._id +'">Eliminar</button>');
+            const $btnDetalles  = $(`<button class="btn btn-success me-1 btn-detalle" data-id="${venta._id}" data-bs-toggle="modal" data-bs-target="#detailSaleModal">Detalles</button>`);
+            const $btnEliminar  = $(`<button class="btn btn-danger btn-eliminar" data-id="${venta._id}">Eliminar</button>`);
             $accionesTd.append($btnDetalles, $btnEliminar);
             $tr.append($accionesTd);
 
-            // Asignar _id a la fila (opcional)
+            // Asignar _id a la fila
             $tr.attr("data-id", venta._id);
 
             // Insertar en el tbody
             $tbody.append($tr);
         });
-        })
+    })
     .fail(function(jqXHR, textStatus, errorThrown) {
         console.error("Error al obtener ventas:", textStatus, errorThrown);
         console.error("Respuesta del servidor:", jqXHR.responseText);
@@ -138,7 +152,7 @@ function getVentaByID(ventaId) {
             const cantidad = parseFloat(item.quantity ?? 0);
             const subtotal = precio * cantidad;
 
-            const $linea1 = $('<div>').text(`${item.productName}    $${precio.toFixed(2)}`);
+            const $linea1 = $('<div>').text(`${item.productName}`);
             const $linea2 = $('<div class="text-end">').text(`${cantidad} x $${precio.toFixed(2)} =   $${subtotal.toFixed(2)}`);
 
             $bloqueProducto.append($linea1, $linea2);

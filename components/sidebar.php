@@ -48,6 +48,11 @@
                 <i class="bi bi-truck me-2"></i> <span class="sidebar-text">Proveedores</span>
             </a>
         </li>
+        <li class="nav-item mb-2">
+            <a id="usuarios" href="<?= $base ?>/usuarios.php" class="nav-link text-white <?= active('usuarios') ?>">
+                <i class="bi bi-person-badge me-2"></i> <span class="sidebar-text">Usuarios</span>
+            </a>
+        </li>
         <li class="nav-item mt-3">
             <a id="cerrar" href="<?= $logoutBase ?>" class="nav-link text-danger">
                 <i class="bi bi-box-arrow-right me-2"></i> <span class="sidebar-text">Cerrar Sesión</span>

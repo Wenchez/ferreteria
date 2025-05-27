@@ -21,7 +21,10 @@
 
 #proveedores:hover{
     background-color: rgb(255 193 7);
-    color: black !important;
+}
+
+#usuarios:hover{
+    background-color: #6f42c1;
 }
 
 #cerrar:hover{
@@ -58,5 +61,9 @@
 #proveedores:hover,
 #proveedores.active {
     background-color: rgb(255 193 7) !important;
-    color: black !important;
+}
+
+#usuarios:hover,
+#usuarios.active {
+    background-color: #6f42c1 !important;
 }

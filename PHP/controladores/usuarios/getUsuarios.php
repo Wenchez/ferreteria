@@ -2,85 +2,78 @@
 header('Content-Type: application/json');
 require_once '../../connections.php';
 
-$data = json_decode(file_get_contents('php://input'), true);
-$db_choice = $data['db_choice'] ?? 'local';
-$result = [];
-$error = '';
+$action = $_GET['action'] ?? '';
+$db_choice = $_GET['db_choice'] ?? 'local';
 
-if ($db_choice === 'both') {
-    // Unificar usuarios de ambas bases
-    if ($localConexion) {
-        try {
-            $dbLocal = $localConexion->selectDatabase('ferreteria');
-            $collection = $dbLocal->selectCollection('users');
-            $usuarios = $collection->find();
-            foreach ($usuarios as $usuario) {
-                $usuario['_id'] = (string)$usuario['_id'];
-                $usuario['db_origin'] = 'LOCAL';
-                $result[] = $usuario;
-            }
-        } catch (Exception $e) {
-            $error .= 'Error al obtener usuarios de LOCAL: ' . $e->getMessage() . ' ';
-        }
-    }
-    if ($atlasConexion) {
-        try {
-            $dbAtlas = $atlasConexion->selectDatabase('ferreteria');
-            $collection = $dbAtlas->selectCollection('users');
-            $usuarios = $collection->find();
-            foreach ($usuarios as $usuario) {
-                $usuario['_id'] = (string)$usuario['_id'];
-                $usuario['db_origin'] = 'REMOTA';
-                $result[] = $usuario;
-            }
-        } catch (Exception $e) {
-            $error .= 'Error al obtener usuarios de REMOTO: ' . $e->getMessage();
-        }
-    }
-    if (!$localConexion && !$atlasConexion) {
-        $error = 'No hay conexiones disponibles.';
-    }
-} else if ($db_choice === 'local') {
-    if ($localConexion) {
-        try {
-            $dbLocal = $localConexion->selectDatabase('ferreteria');
-            $collection = $dbLocal->selectCollection('users');
-            $usuarios = $collection->find();
-            foreach ($usuarios as $usuario) {
-                $usuario['_id'] = (string)$usuario['_id'];
-                $usuario['db_origin'] = 'LOCAL';
-                $result[] = $usuario;
-            }
-        } catch (Exception $e) {
-            $error = 'Error al obtener usuarios de LOCAL: ' . $e->getMessage();
-        }
-    } else {
-        $error = 'Conexión LOCAL no disponible.';
-    }
-} else if ($db_choice === 'remote') {
-    if ($atlasConexion) {
-        try {
-            $dbAtlas = $atlasConexion->selectDatabase('ferreteria');
-            $collection = $dbAtlas->selectCollection('users');
-            $usuarios = $collection->find();
-            foreach ($usuarios as $usuario) {
-                $usuario['_id'] = (string)$usuario['_id'];
-                $usuario['db_origin'] = 'REMOTA';
-                $result[] = $usuario;
-            }
-        } catch (Exception $e) {
-            $error = 'Error al obtener usuarios de REMOTO: ' . $e->getMessage();
-        }
-    } else {
-        $error = 'Conexión REMOTA no disponible.';
-    }
+// Selección de conexión
+$dbConnection = null;
+if ($db_choice === 'remote') {
+    $dbConnection = $atlasConexion;
+    $connectionType = 'REMOTA';
 } else {
-    $error = 'db_choice inválido.';
+    $dbConnection = $localConexion;
+    $connectionType = 'LOCAL';
 }
 
-if ($error) {
-    http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => $error]);
-} else {
-    echo json_encode(['status' => 'success', 'usuarios' => $result]);
+if (!$dbConnection) {
+    echo json_encode(['status' => 'error', 'message' => 'No se pudo establecer conexión con la base de datos seleccionada.']);
+    exit;
 }
+
+$db = $dbConnection->selectDatabase('ferreteria');
+$collection = $db->selectCollection('users');
+
+if ($action === 'getUsers') {
+    $usuarios = [];
+    try {
+        $cursor = $collection->find();
+        foreach ($cursor as $doc) {
+            $usuarios[] = [
+                '_id' => (string)$doc['_id'],
+                'username' => $doc['username'] ?? '',
+                'email' => $doc['email'] ?? '',
+                'userType' => $doc['userType'] ?? ''
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'usuarios' => $usuarios,
+            'db' => $connectionType
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Error al obtener usuarios de ' . $connectionType . ': ' . $e->getMessage()
+        ]);
+    }
+    exit;
+}
+if ($action === 'getUserById' && isset($_GET['userId'])) {
+    $usuario = [];
+    try {
+        $id = $_GET['userId'];
+        $doc = $collection->findOne(['_id' => new MongoDB\BSON\ObjectId($id)]);
+        if ($doc) {
+            $usuario = [
+                '_id' => (string)$doc['_id'],
+                'username' => $doc['username'] ?? '',
+                'email' => $doc['email'] ?? '',
+                'userType' => $doc['userType'] ?? ''
+            ];
+        }
+        echo json_encode([
+            'status' => 'success',
+            'usuario' => $usuario,
+            'db' => $connectionType
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Error al obtener usuarios de ' . $connectionType . ': ' . $e->getMessage()
+        ]);
+    }
+    exit;
+}
+
+echo json_encode(['status' => 'error', 'message' => 'Acción no válida']);
+?>

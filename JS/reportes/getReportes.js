@@ -1,8 +1,10 @@
 $(document).ready(function () {
-    getventas();
+    getReportes();
 
-    $('input[name="databaseType"]').on("change", function () {
-        getventas();
+    $('#databaseSwitch').on("change", function () {
+        setTimeout(function() {
+            getReportes();
+        }, 50);
     });
 
     $(document).on("click", ".btn-detalle", function () {
@@ -33,8 +35,8 @@ $(document).ready(function () {
     });
 });
 
-function getventas() {
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+function getReportes() {
+    const dbChoice = $('#databaseSwitch').val();
     $.get('/ferreteria/PHP/controladores/ventas/getVentas.php', 
           { db_choice: dbChoice, action: 'getSales' })
     .done(function(response) {
@@ -107,7 +109,7 @@ function getventas() {
 }
 
 function getVentaByID(ventaId) {
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch').val();
 
     $.get(
         '/ferreteria/PHP/controladores/ventas/getVentas.php',

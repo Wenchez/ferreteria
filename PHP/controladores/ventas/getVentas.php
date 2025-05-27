@@ -42,7 +42,7 @@
             try{
                 $documentos = $coleccion->find();
 
-                $productos = [];
+                $ventas = [];
                 foreach ($documentos as $venta) {
                     $ventas[] = $venta;
                 }

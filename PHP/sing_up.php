@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
 	if ($insertionSuccessful) {
-        header("Location: ../login.html"); // Redirige al usuario a login.html
+        header("Location: ../login.php"); // Redirige al usuario a login.php
         exit(); // Es crucial llamar a exit() después de header()
     } else {
         // En caso de que ninguna inserción fue exitosa o ambas conexiones fallaron

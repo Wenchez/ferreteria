@@ -1,0 +1,13 @@
+.btn-purple {
+    background-color: #6f42c1; /* Or use the Bootstrap $purple variable */
+    color: white;
+}
+
+.text-purple {
+    color: #6f42c1; /* Or use the Bootstrap $purple variable */
+}
+
+.table-purple {
+    background-color: #d09dff !important;
+    font-weight: bold;
+}

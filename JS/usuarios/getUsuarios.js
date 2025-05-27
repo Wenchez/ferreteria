@@ -1,8 +1,10 @@
 $(document).ready(function () {
     getUsuarios();
 
-    $('input[name="databaseType"]').on("change", function () {
-        getUsuarios();
+    $('#databaseSwitch').on("change", function () {
+        setTimeout(function() {
+            getUsuarios();
+        }, 50);
     });
 
     $(document).on("click", ".btn-editar", function () {
@@ -19,12 +21,16 @@ $(document).ready(function () {
 });
 
 function getUsuarios(){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch').val();
+    console.log(dbChoice)
     $.ajax({
         url: '/ferreteria/PHP/controladores/usuarios/getUsuarios.php',
-        type: 'POST',
+        type: 'GET',
         contentType: 'application/json',
-        data: JSON.stringify({ db_choice: dbChoice }),
+        data: {
+            action: 'getUsers',
+            db_choice: dbChoice
+        },
         dataType: 'json',
         success: function(response) {
             const $tbody = $("table.table tbody");
@@ -33,12 +39,27 @@ function getUsuarios(){
                 const $tr = $("<tr>");
                 $tr.append($("<td>").text(user.username));
                 $tr.append($("<td>").addClass("text-nowrap").text(user.email));
-                $tr.append($("<td>").addClass("text-nowrap").text(user.userType || user.role || ''));
-                $tr.append($("<td>").addClass("text-nowrap").text(user.password));
-                // Mostrar origen si viene de ambas
-                if(dbChoice === 'both') {
-                    $tr.append($("<td>").addClass("text-nowrap").html('<span class="badge bg-info">' + (user.db_origin || '') + '</span>'));
+                // Crear celda del estado
+                const $tipo = $("<td>");
+
+                // Crear el badge
+                const $badge = $("<span>").addClass("text-nowrap badge fs-6 fw-bold");
+                switch (user.userType) {
+                    case "ventas":
+                        $badge.addClass("bg-success text-white").text("Ventas");
+                        break;
+                    case "admin":
+                        $badge.addClass("bg-primary text-white").text("Administrador");
+                        break;
+                    default:
+                        console.log("Ninguno")
+                        $badge.addClass("bg-secondary text-white").text("");
+                        break;
                 }
+
+                $tipo.append($badge);
+                $tr.append($tipo);
+
                 const $accionesTd = $("<td>").addClass("d-flex text-wrap");
                 const $btnEditar = $('<button class="btn btn-primary me-1 btn-editar" data-bs-toggle="modal" data-bs-target="#modUserModal">Editar</button>');
                 const $btnEliminar = $('<button class="btn btn-danger btn-eliminar">Eliminar</button>');
@@ -56,13 +77,13 @@ function getUsuarios(){
 }
 
 function getUsuarioByID(userId){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch').val();
     $.get('/ferreteria/PHP/controladores/usuarios/getUsuarios.php', { db_choice: dbChoice, action:'getUserById', userId: userId }, function() {})
     .done(function(response){
-        $("#editUsername").val(response.usuario.username);
+        console.log(response)
+        $("#editUserName").val(response.usuario.username);
         $("#editEmail").val(response.usuario.email);
-        $("#editUserType").val(response.usuario.userType);
-        $("#editPassword").val(response.usuario.password);
+        $("#editRole").val(response.usuario.userType);
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
         console.error("Error al obtener usuario:", textStatus, errorThrown);

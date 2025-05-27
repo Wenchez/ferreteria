@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['UserID'])) {
-    header("Location: ../login.html");
+    header("Location: ../login.php");
     exit();
 }
 ?>
@@ -10,12 +10,7 @@ if (!isset($_SESSION['UserID'])) {
 <head>
     <meta charset="UTF-8">
     <title>Usuarios - Ferretería</title>
-    <link rel="stylesheet" href="../CSS/bootstrap.css">
-    <script src="../JS/jquery-3.7.1.js"></script>
-    <script src="../JS/bootstrap.bundle.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
-    <script src="../JS/usuarios/addUsuarios.js"></script>
+    <?php include "../components/header.html" ?>
     <script src="../JS/usuarios/getUsuarios.js"></script>
     <script src="../JS/usuarios/modUsuarios.js"></script>
     <script src="../JS/usuarios/deleteUsuarios.js"></script>
@@ -32,70 +27,28 @@ if (!isset($_SESSION['UserID'])) {
         <div class="container-fluid py-4">
             <div class="row">
                 <div class="d-flex justify-content-between align-items-center col-12">
-                    <h2 class="text-primary"><i class="bi bi-person"></i> Usuarios</h2>
-                    <button id="add_User" class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                        <i class="bi bi-plus me-2"></i> Añadir usuario
-                    </button>
+                    <h2 class="text-purple"><i class="bi bi-person"></i> Usuarios</h2>
                 </div>
             </div>
-            <!-- Base de datos a usar -->
-            <?php 
-            include_once "../components/changeDB.html"; 
-            ?>
+            
             <!-- Tabla de usuarios -->
             <div class="row mt-3">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title text-primary"><i class="bi bi-person"></i> Lista de Usuarios</h2>
+                            <h2 class="card-title text-purple"><i class="bi bi-person"></i> Lista de Usuarios</h2>
                             <table class="table table-bordered align-middle">
-                                <thead class="table-primary">
+                                <thead>
                                     <tr>
-                                        <th scope="col">Usuario</th>
-                                        <th scope="col">Correo</th>
-                                        <th scope="col">Tipo</th>
-                                        <th scope="col">Contraseña</th>
-                                        <th scope="col">Acciones</th>
+                                        <th class="table-purple" scope="col">Usuario</th>
+                                        <th class="table-purple" scope="col">Correo</th>
+                                        <th class="table-purple" scope="col">Tipo</th>
+                                        <th class="table-purple" scope="col">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Modal de crear usuario -->
-            <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addUserModalLabel">Añadir Nuevo Usuario</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addUserForm">
-                                <div class="mb-3">
-                                    <label for="username" class="form-label">Usuario</label>
-                                    <input type="text" class="form-control" id="username" name="username" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Correo</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="userType" class="form-label">Tipo</label>
-                                    <input type="text" class="form-control" id="userType" name="userType" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">Contraseña</label>
-                                    <input type="text" class="form-control" id="password" name="password" required>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary" form="addUserForm">Guardar Usuario</button>
                         </div>
                     </div>
                 </div>
@@ -112,20 +65,19 @@ if (!isset($_SESSION['UserID'])) {
                             <form id="modUserForm">
                                 <input type="hidden" id="editId" name="editId">
                                 <div class="mb-3">
-                                    <label for="editUsername" class="form-label">Usuario</label>
-                                    <input type="text" class="form-control" id="editUsername" name="editUsername" required>
+                                    <label for="editUserName" class="form-label">Nombre del Usuario</label>
+                                    <input type="text" class="form-control" id="editUserName" name="editUserName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editRole" class="form-label">Tipo de usuario</label>
+                                    <select class="form-select" id="editRole" name="editRole">
+                                        <option value="admin">Administrador</option>
+                                        <option value="ventas">Vendedor</option>
+                                    </select>
                                 </div>
                                 <div class="mb-3">
                                     <label for="editEmail" class="form-label">Correo</label>
                                     <input type="email" class="form-control" id="editEmail" name="editEmail" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editUserType" class="form-label">Tipo</label>
-                                    <input type="text" class="form-control" id="editUserType" name="editUserType" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="editPassword" class="form-label">Contraseña</label>
-                                    <input type="text" class="form-control" id="editPassword" name="editPassword" required>
                                 </div>
                             </form>
                         </div>

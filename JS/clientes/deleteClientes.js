@@ -1,5 +1,5 @@
 function deleteCliente(id) {
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch:checked').val();
     if (confirm('¿Seguro que deseas eliminar este cliente?')) {
         $.ajax({
             url: '/ferreteria/PHP/controladores/clientes/deleteClientes.php',

@@ -20,7 +20,7 @@ function deleteVenta(saleId){
         success: function (response) {
             if (response.status === "success") {
                 console.log("Venta eliminada:", response.mensaje_local);
-                getventas(); // Recargar la tabla
+                getReportes(); // Recargar la tabla
             } else {
                 console.error("Error al eliminar:", response.mensaje_local, response.mensaje_remoto);
             }

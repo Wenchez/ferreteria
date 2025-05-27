@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['UserID'])) {
-    header("Location: ../login.html");
+    header("Location: ../login.php");
     exit();
 }
 ?>
@@ -34,10 +34,7 @@ if (!isset($_SESSION['UserID'])) {
                     </button>
                 </div>
             </div>
-            <!-- Base de datos a usar -->
-            <?php 
-            include_once "../components/changeDB.html"; 
-            ?>
+            
             <!-- Alerta de stock bajo -->
             <div class="row">
                 <div id='alert_stock'></div>

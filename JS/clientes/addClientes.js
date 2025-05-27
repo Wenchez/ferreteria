@@ -7,7 +7,7 @@ $(document).ready(function () {
             email: $('#email').val(),
             address: $('#address').val()
         };
-        const dbChoice = $('input[name="databaseType"]:checked').val();
+        const dbChoice = $('#databaseSwitch').val();
         data.db_choice = dbChoice;
         $.ajax({
             url: '/ferreteria/PHP/controladores/clientes/addClientes.php',

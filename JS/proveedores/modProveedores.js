@@ -7,7 +7,8 @@ $(document).ready(function () {
             contactName: $('#editContactName').val(),
             phone: $('#editPhone').val(),
             email: $('#editEmail').val(),
-            address: $('#editAddress').val()
+            address: $('#editAddress').val(),
+            db_choice: $('#databaseSwitch').val()
         };
         $.ajax({
             url: '/ferreteria/PHP/controladores/proveedores/modProveedores.php',

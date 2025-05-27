@@ -1,8 +1,10 @@
 $(document).ready(function () {
     getProveedores(); // Primer llamado para la tabla
 
-    $('input[name="databaseType"]').on("change", function () {
-        getProveedores(); // Recarga la tabla según la base seleccionada
+    $('#databaseSwitch').on("change", function () {
+        setTimeout(function() {
+            getProveedores(); // Recarga la tabla según la base seleccionada
+        }, 50);
     });
 
     $(document).on("click", ".btn-editar", function () {
@@ -24,7 +26,8 @@ $(document).ready(function () {
 });
 
 function getProveedores(){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch').val();
+    console.log(dbChoice)
     $.get('/ferreteria/PHP/controladores/proveedores/getProveedores.php', { db_choice: dbChoice, action:'getSuppliers' }, function() {
     })
     .done(function(response){
@@ -71,7 +74,7 @@ function getProveedores(){
 }
 
 function getProveedorByID(supplierId){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch').val();
     $.get('/ferreteria/PHP/controladores/proveedores/getProveedores.php', { db_choice: dbChoice, action:'getSupplierById', supplierId: supplierId }, function() {
     })
     .done(function(response){

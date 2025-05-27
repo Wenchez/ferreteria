@@ -3,8 +3,8 @@ session_start(); // Siempre inicia la sesión al principio
 
 // Verifica si la sesión 'UserID' NO existe
 if (!isset($_SESSION['UserID'])) {
-    // Si no está loggeado, redirige a login.html
-    header("Location: login.html");
+    // Si no está loggeado, redirige a login.php
+    header("Location: login.php");
     exit(); // Es crucial llamar a exit() después de header()
 }
 
@@ -18,8 +18,7 @@ if (!isset($_SESSION['UserID'])) {
     <title>Dashboard - Ferretería</title>
     <?php include "components/header.html" ?>
 </head>
-<body class="bg-light">
-    <div class="d-flex">
+<body class="bg-light d-flex">
         <!-- Sidebar -->
         <?php
             $activePage = 'dashboard';
@@ -37,18 +36,6 @@ if (!isset($_SESSION['UserID'])) {
                 <div class="row g-4 justify-content-center">
                     <div class="col-md-3">
                         <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center text-primary">
-                                <div class="mb-3">
-                                    <i class="bi bi-box-seam fs-1"></i>
-                                </div>
-                                <h5 class="card-title">Productos</h5>
-                                <p class="card-text">Administra el inventario de productos de la tienda.</p>
-                                <a href="modulos/productos.php" class="btn btn-outline-primary btn-sm">Ver productos</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card h-100 shadow-sm">
                             <div class="card-body text-center text-success">
                                 <div class="mb-3">
                                     <i class="bi bi-cart fs-1"></i>
@@ -61,20 +48,6 @@ if (!isset($_SESSION['UserID'])) {
                     </div>
                     <div class="col-md-3">
                         <div class="card h-100 shadow-sm">
-                            <div class="card-body text-center text-info">
-                                <div class="mb-3">
-                                    <i class="bi bi-people fs-1"></i>
-                                </div>
-                                <h5 class="card-title">Clientes</h5>
-                                <p class="card-text">Gestiona la información de tus clientes.</p>
-                                <a href="modulos/clientes.php" class="btn btn-outline-info btn-sm">Ver clientes</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-2 g-4 justify-content-center">
-                    <div class="col-md-3">
-                        <div class="card h-100 shadow-sm">
                             <div class="card-body text-center text-secondary">
                                 <div class="mb-3">
                                     <i class="bi bi-bar-chart fs-1"></i>
@@ -82,6 +55,32 @@ if (!isset($_SESSION['UserID'])) {
                                 <h5 class="card-title">Reportes</h5>
                                 <p class="card-text">Consulta y gestiona las ventas realizadas</p>
                                 <a href="modulos/reportes.php" class="btn btn-outline-secondary btn-sm">Ver Reportes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2 g-4 justify-content-center">
+                    <div class="col-md-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center text-primary">
+                                <div class="mb-3">
+                                    <i class="bi bi-box-seam fs-1"></i>
+                                </div>
+                                <h5 class="card-title">Productos</h5>
+                                <p class="card-text">Administra el inventario de productos de la tienda.</p>
+                                <a href="modulos/productos.php" class="btn btn-outline-primary btn-sm">Ver productos</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center text-info">
+                                <div class="mb-3">
+                                    <i class="bi bi-people fs-1"></i>
+                                </div>
+                                <h5 class="card-title">Clientes</h5>
+                                <p class="card-text">Gestiona la información de tus clientes.</p>
+                                <a href="modulos/clientes.php" class="btn btn-outline-info btn-sm">Ver clientes</a>
                             </div>
                         </div>
                     </div>

@@ -3,12 +3,12 @@ $(document).ready(function () {
         e.preventDefault();
         const data = {
             _id: $('#editId').val(),
-            username: $('#editUsername').val(),
+            username: $('#editUserName').val(),
             email: $('#editEmail').val(),
-            userType: $('#editUserType').val(),
-            password: $('#editPassword').val()
+            userType: $('#editRole').val()
         };
-        let dbChoice = $('input[name="databaseType"]:checked').val();
+        console.log(data);
+        let dbChoice = $('#databaseSwitch').val();
         if (!dbChoice) dbChoice = 'local';
         data.db_choice = dbChoice;
         $.ajax({

@@ -1,5 +1,5 @@
 function deleteUsuario(id) {
-    let dbChoice = $('input[name="databaseType"]:checked').val();
+    let dbChoice = $('#databaseSwitch').val();
     if (!dbChoice) dbChoice = 'local';
     if (confirm('¿Seguro que deseas eliminar este usuario?')) {
         $.ajax({

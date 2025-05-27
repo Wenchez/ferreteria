@@ -1,73 +1,45 @@
 <?php
 header('Content-Type: application/json');
+session_start();
 require_once '../../connections.php';
+require_once '../../vendor/autoload.php'; // Asegúrate de incluir esto si no lo tenías
+
+use MongoDB\BSON\ObjectId;
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-if (!$data || !isset($data['_id'])) {
+if (!$data || !isset($data['_id']) || !isset($data['db_choice'])) {
     echo json_encode(['status' => 'error', 'message' => 'Datos insuficientes para modificar usuario.']);
     exit;
 }
 
 $id = $data['_id'];
+$dbChoice = $data['db_choice'] ?? 'local';
+
 $updateFields = [];
 if (isset($data['username'])) $updateFields['username'] = $data['username'];
 if (isset($data['email'])) $updateFields['email'] = $data['email'];
-if (isset($data['password'])) $updateFields['password'] = $data['password'];
-if (isset($data['role'])) $updateFields['role'] = $data['role'];
+if (isset($data['userType'])) $updateFields['userType'] = $data['userType'];
 
-use MongoDB\BSON\ObjectId;
+// Elegir conexión
+$conexion = $dbChoice === 'remote' ? $atlasConexion : $localConexion;
+$origen = strtoupper($dbChoice);
 
-$updateLocalMsg = '';
-$updateRemoteMsg = '';
-$updateSuccess = false;
-
-// Modificar en LOCAL
-if ($localConexion) {
-    try {
-        $dbLocal = $localConexion->selectDatabase('ferreteria');
-        $collectionLocal = $dbLocal->selectCollection('users');
-        $resLocal = $collectionLocal->updateOne([
-            '_id' => new ObjectId($id)
-        ], ['$set' => $updateFields]);
-        $updateLocalMsg = 'Usuario modificado en LOCAL.';
-        $updateSuccess = $resLocal->getModifiedCount() > 0;
-    } catch (Exception $e) {
-        $updateLocalMsg = 'Error al modificar en LOCAL: ' . $e->getMessage();
-    }
-} else {
-    $updateLocalMsg = 'Conexión LOCAL no disponible. No se pudo modificar.';
+if (!$conexion) {
+    echo json_encode(['status' => 'error', 'message' => "No se pudo conectar a la base de datos $origen."]);
+    exit;
 }
 
-// Modificar en REMOTO
-if ($atlasConexion) {
-    try {
-        $dbAtlas = $atlasConexion->selectDatabase('ferreteria');
-        $collectionRemote = $dbAtlas->selectCollection('users');
-        $resRemote = $collectionRemote->updateOne([
-            '_id' => new ObjectId($id)
-        ], ['$set' => $updateFields]);
-        $updateRemoteMsg = 'Usuario modificado en REMOTO.';
-        $updateSuccess = $updateSuccess || $resRemote->getModifiedCount() > 0;
-    } catch (Exception $e) {
-        $updateRemoteMsg = 'Error al modificar en REMOTO: ' . $e->getMessage();
-    }
-} else {
-    $updateRemoteMsg = 'Conexión REMOTA no disponible. No se pudo modificar.';
-}
+try {
+    $db = $conexion->selectDatabase('ferreteria');
+    $collection = $db->selectCollection('users');
+    $res = $collection->updateOne(['_id' => new ObjectId($id)], ['$set' => $updateFields]);
 
-if ($updateSuccess) {
-    http_response_code(200);
-    echo json_encode([
-        'status' => 'success',
-        'message_local' => $updateLocalMsg,
-        'message_remote' => $updateRemoteMsg
-    ]);
-} else {
-    http_response_code(500);
-    echo json_encode([
-        'status' => 'error',
-        'message_local' => $updateLocalMsg,
-        'message_remote' => $updateRemoteMsg
-    ]);
+    if ($res->getModifiedCount() > 0) {
+        echo json_encode(['status' => 'success', 'message' => "Usuario modificado en $origen."]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => "No se modificó ningún dato en $origen."]);
+    }
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => "Error al modificar en $origen: " . $e->getMessage()]);
 }

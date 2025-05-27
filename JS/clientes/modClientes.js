@@ -6,9 +6,10 @@ $(document).ready(function () {
             clientName: $('#editClientName').val(),
             phone: $('#editPhone').val(),
             email: $('#editEmail').val(),
-            address: $('#editAddress').val()
+            address: $('#editAddress').val(),
+            db_choice: $('#databaseSwitch').val()
         };
-        const dbChoice = $('input[name="databaseType"]:checked').val();
+        const dbChoice = $('#databaseSwitch:checked').val();
         data.db_choice = dbChoice;
         $.ajax({
             url: '/ferreteria/PHP/controladores/clientes/modClientes.php',

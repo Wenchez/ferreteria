@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,11 +11,26 @@
     <link rel="stylesheet" href="CSS/bootstrap.css">
     <script src="JS/bootstrap.bundle.js"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Epilogue;
+            background: #f4f6fb;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+
     <link rel="icon" href="/ferreteria/components/favicon.ico" type="image/x-icon">
 
     <script src="JS/login.js"></script>
 </head>
-<body class="bg-light">
+<body>
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="row w-100">
             <div class="col-12">

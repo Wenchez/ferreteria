@@ -1,8 +1,10 @@
 $(document).ready(function () {
     getProductos(); // Primer llamado para la tabla
 
-    $('input[name="databaseType"]').on("change", function () {
-        getProductos(); // O la funcion que tengas para mostrar las cosas en tu tabla
+    $('#databaseSwitch').on("change", function () {
+        setTimeout(function() {
+            getProductos(); // O la funcion que tengas para mostrar las cosas en tu tabla
+        }, 50);
     });
 
     $(document).on("click", ".btn-editar", function () {
@@ -18,7 +20,7 @@ $(document).ready(function () {
 });
 
 function getProductos(){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch:checked').val();
     $.get('/ferreteria/PHP/controladores/productos/getProductos.php', { db_choice: dbChoice, action:'getProducts' }, function() {
     })
     .done(function(response){
@@ -91,7 +93,7 @@ function getProductos(){
 }
 
 function getProductoByID(productId){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch:checked').val();
     $.get('/ferreteria/PHP/controladores/productos/getProductos.php', { db_choice: dbChoice, action:'getProductById', productId:productId }, function() {
     })
     .done(function(response){

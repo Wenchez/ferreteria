@@ -1,63 +1,40 @@
 <?php
 header('Content-Type: application/json');
+session_start();
 require_once '../../connections.php';
+require_once '../../vendor/autoload.php'; // Asegúrate de tenerlo si usas Composer
+
+use MongoDB\BSON\ObjectId;
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-if (!$data || !isset($data['_id'])) {
-    echo json_encode(['status' => 'error', 'message' => 'ID de usuario no proporcionado.']);
+if (!$data || !isset($data['_id']) || !isset($data['db_choice'])) {
+    echo json_encode(['status' => 'error', 'message' => 'Datos insuficientes para eliminar usuario.']);
     exit;
 }
 
 $id = $data['_id'];
-use MongoDB\BSON\ObjectId;
+$dbChoice = $data['db_choice'] ?? 'local';
 
-$deleteLocalMsg = '';
-$deleteRemoteMsg = '';
-$deleteSuccess = false;
+$conexion = $dbChoice === 'remote' ? $atlasConexion : $localConexion;
+$origen = strtoupper($dbChoice);
 
-// Eliminar en LOCAL
-if ($localConexion) {
-    try {
-        $dbLocal = $localConexion->selectDatabase('ferreteria');
-        $collectionLocal = $dbLocal->selectCollection('users');
-        $resLocal = $collectionLocal->deleteOne(['_id' => new ObjectId($id)]);
-        $deleteLocalMsg = 'Usuario eliminado en LOCAL.';
-        $deleteSuccess = $resLocal->getDeletedCount() > 0;
-    } catch (Exception $e) {
-        $deleteLocalMsg = 'Error al eliminar en LOCAL: ' . $e->getMessage();
+if (!$conexion) {
+    echo json_encode(['status' => 'error', 'message' => "No se pudo conectar a la base de datos $origen."]);
+    exit;
+}
+
+try {
+    $db = $conexion->selectDatabase('ferreteria');
+    $collection = $db->selectCollection('users');
+    $res = $collection->deleteOne(['_id' => new ObjectId($id)]);
+
+    if ($res->getDeletedCount() > 0) {
+        echo json_encode(['status' => 'success', 'message' => "Usuario eliminado de $origen."]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => "No se eliminó ningún usuario en $origen."]);
     }
-} else {
-    $deleteLocalMsg = 'Conexión LOCAL no disponible. No se pudo eliminar.';
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => "Error al eliminar en $origen: " . $e->getMessage()]);
 }
-
-// Eliminar en REMOTO
-if ($atlasConexion) {
-    try {
-        $dbAtlas = $atlasConexion->selectDatabase('ferreteria');
-        $collectionRemote = $dbAtlas->selectCollection('users');
-        $resRemote = $collectionRemote->deleteOne(['_id' => new ObjectId($id)]);
-        $deleteRemoteMsg = 'Usuario eliminado en REMOTO.';
-        $deleteSuccess = $deleteSuccess || $resRemote->getDeletedCount() > 0;
-    } catch (Exception $e) {
-        $deleteRemoteMsg = 'Error al eliminar en REMOTO: ' . $e->getMessage();
-    }
-} else {
-    $deleteRemoteMsg = 'Conexión REMOTA no disponible. No se pudo eliminar.';
-}
-
-if ($deleteSuccess) {
-    http_response_code(200);
-    echo json_encode([
-        'status' => 'success',
-        'message_local' => $deleteLocalMsg,
-        'message_remote' => $deleteRemoteMsg
-    ]);
-} else {
-    http_response_code(500);
-    echo json_encode([
-        'status' => 'error',
-        'message_local' => $deleteLocalMsg,
-        'message_remote' => $deleteRemoteMsg
-    ]);
-}
+?>

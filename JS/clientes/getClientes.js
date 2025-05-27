@@ -1,13 +1,15 @@
 $(document).ready(function () {
     getClientes();
 
-    $('input[name="databaseType"]').on("change", function () {
-        getClientes();
-    });
-
+    $('#databaseSwitch').on("change", function () {
+        setTimeout(function() {
+            getClientes();// O la funcion que tengas para mostrar las cosas en tu tabla
+        }, 50);
+    }); 
     $(document).on("click", ".btn-editar", function () {
         const $fila = $(this).closest("tr");
         const id = $fila.data("id");
+        console.log(id)
         $("#editId").val(id);
         getClienteByID(id);
     });
@@ -19,7 +21,7 @@ $(document).ready(function () {
 });
 
 function getClientes(){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch').val();
     $.get('/ferreteria/PHP/controladores/clientes/getClientes.php', { db_choice: dbChoice, action:'getClients' }, function() {})
     .done(function(response){
         const $tbody = $("table.table tbody");
@@ -46,7 +48,7 @@ function getClientes(){
 }
 
 function getClienteByID(clientId){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch').val();
     $.get('/ferreteria/PHP/controladores/clientes/getClientes.php', { db_choice: dbChoice, action:'getClientById', clientId: clientId }, function() {})
     .done(function(response){
         $("#editClientName").val(response.cliente.clientName);

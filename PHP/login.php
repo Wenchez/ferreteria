@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $dbConnection = null;
     $connectionType = '';
     $message = '';
+    $dbUsed='';
     $loggedIn = false;
     $userFound = null;
 
@@ -19,9 +20,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($dbChoice === 'atlas') {
         $dbConnection = $atlasConexion;
         $connectionType = 'ATLAS';
+        $dbUsed='remote';
     } else { // Por defecto o si es 'local'
         $dbConnection = $localConexion;
         $connectionType = 'LOCAL';
+        $dbUsed='local';
     }
 
     if ($dbConnection) {
@@ -42,6 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['UserID'] = (string)$userFound['_id'];
                 $_SESSION['Username'] = $userFound['username'];
                 $_SESSION['UserType'] = $userFound['userType'];
+                $_SESSION['dbUsed'] = $dbUsed;
             } else {
                 $message = "Usuario y/o contraseña incorrectos en la base de datos {$connectionType}.";
             }

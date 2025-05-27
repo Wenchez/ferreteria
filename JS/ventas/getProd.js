@@ -1,5 +1,5 @@
 function getProductoByName(productName){
-    const dbChoice = $('input[name="databaseType"]:checked').val();
+    const dbChoice = $('#databaseSwitch').val();
     $.get(
       "/ferreteria/PHP/controladores/productos/getProductos.php",
       {

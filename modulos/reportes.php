@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['UserID'])) {
-    header("Location: ../login.html");
+    header("Location: ../login.php");
     exit();
 }
 ?>
@@ -11,8 +11,8 @@ if (!isset($_SESSION['UserID'])) {
     <meta charset="UTF-8">
     <title>Reportes - Ferretería</title>
     <?php include "../components/header.html" ?>
-    <script src="../JS/ventas/getVentas.js"></script>
-    <script src="../JS/ventas/deleteVentas.js"></script>
+    <script src="../JS/reportes/getReportes.js"></script>
+    <script src="../JS/reportes/deleteReportes.js"></script>
 </head>
 <body class="bg-light d-flex">
     <!-- Sidebar -->
@@ -28,10 +28,7 @@ if (!isset($_SESSION['UserID'])) {
                     <h2 class="text-secondary"><i class="bi bi-bar-chart"></i> Reportes</h2>
                 </div>
             </div>
-            <!-- Base de datos a usar -->
-            <?php 
-            include_once "../components/changeDB.html"; 
-            ?>
+            
             <div class="row">
                 <div class="col-12">
                     <div class="card shadow">

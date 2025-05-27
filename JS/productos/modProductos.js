@@ -9,14 +9,15 @@ $(document).ready(function () {
         const supplierName = $("#editSupplierName").val().trim();
         const stock        = $("#editStock").val().trim();
         const price        = $("#editPrice").val().trim();
+        const dbChoice     = $('#databaseSwitch').val();
 
-        console.log("Editando el producto:", productId, productName, category, supplierName, stock, price);
+        console.log("Editando el producto:", productId, productName, category, supplierName, stock, price, dbChoice);
 
-        modProduct(productId, productName, category, supplierName, stock, price);
+        modProduct(productId, productName, category, supplierName, stock, price, dbChoice);
     });
 });
 
-function modProduct(productId, productName, category, supplierName, stock, price) {
+function modProduct(productId, productName, category, supplierName, stock, price, dbChoice) {
     // 2) Validaciones básicas (por ejemplo, asegurarse de que haya ID y nombre)
     if (!productId) {
         console.error("Falta el product_id para modificar.");
@@ -35,7 +36,8 @@ function modProduct(productId, productName, category, supplierName, stock, price
         category:      category,
         supplierName:  supplierName,
         stock:         stock,
-        price:         price
+        price:         price,
+        db_choice:     dbChoice
     };
 
     // 4) Petición AJAX tipo PUT al endpoint de actualización

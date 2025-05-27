@@ -40,7 +40,7 @@ if (!isset($_SESSION['UserID'])) {
                 <div id='alert_stock'></div>
             </div>
             <!-- Tabla de productos -->
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-12">
                     <div class="card shadow">
                         <div class="card-body">

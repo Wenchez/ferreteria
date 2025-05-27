@@ -13,10 +13,11 @@ $(document).ready(function () {
 });
 
 function deleteProducto(productId){
+    const dbChoice     = $('#databaseSwitch').val();
     $.ajax({
         url: '/ferreteria/PHP/controladores/productos/deleteProductos.php',
         type: 'POST',
-        data: { id: productId },
+        data: { id: productId, db_choice: dbChoice },
         success: function (response) {
             if (response.status === "success") {
                 console.log("Producto eliminado:", response.mensaje_local);

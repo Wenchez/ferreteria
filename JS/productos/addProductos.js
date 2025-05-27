@@ -11,14 +11,15 @@ $(document).ready(function () {
         const supplierName = $("#supplierName").val().trim();
         const stock        = $("#stock").val().trim();
         const price        = $("#price").val().trim();
+        const dbChoice     = $('#databaseSwitch').val();
 
-        console.log("Agregando el producto:", productName, category, supplierName, stock, price);
+        console.log("Agregando el producto:", productName, category, supplierName, stock, price, dbChoice);
 
-        addProduct(productName, category, supplierName, stock, price);
+        addProduct(productName, category, supplierName, stock, price, dbChoice);
     });
 });
 
-function addProduct(productName, category, supplierName, stock, price){
+function addProduct(productName, category, supplierName, stock, price, dbChoice){
     if (!productName) {
         console.error("El nombre del producto no puede estar vacío.");
         return;
@@ -29,7 +30,8 @@ function addProduct(productName, category, supplierName, stock, price){
         category:      category,
         supplierName:  supplierName,
         stock:         stock,
-        price:         price
+        price:         price,
+        db_choice:     dbChoice
     };
 
     $.ajax({

@@ -7,86 +7,70 @@
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
         echo json_encode([
-            'status'         => 'error',
-            'mensaje_local'  => 'Método no permitido. Use POST.',
-            'mensaje_remoto' => 'Método no permitido. Use POST.'
+            'status'  => 'error',
+            'message' => 'Método no permitido. Use POST.'
         ]);
         exit;
     }
 
-    // 2. Obtener y validar el ID
+    // 2. Obtener elección de base de datos (GET o POST)
+    $dbChoice = $_GET['db_choice'] ?? $_POST['db_choice'] ?? 'local';
+    if ($dbChoice === 'remote') {
+        $dbConnection   = $atlasConexion;
+        $connectionType = 'REMOTE';
+    } else {
+        $dbConnection   = $localConexion;
+        $connectionType = 'LOCAL';
+    }
+
+    if (!$dbConnection) {
+        http_response_code(500);
+        echo json_encode([
+            'status'  => 'error',
+            'message' => "No se pudo establecer conexión con la base de datos seleccionada ($connectionType)."
+        ]);
+        exit;
+    }
+
+    // 3. Obtener y validar el ID del producto
     $productId = $_POST['id'] ?? '';
     if (empty($productId)) {
         http_response_code(400);
         echo json_encode([
-            'status'         => 'error',
-            'mensaje_local'  => 'No se proporcionó el ID del producto.',
-            'mensaje_remoto' => 'No se proporcionó el ID del producto.'
+            'status'  => 'error',
+            'message' => "No se proporcionó el ID del producto."
         ]);
         exit;
     }
 
-    // Construir el filtro y los datos a actualizar
-    $filter = ['_id' => $productId];
+    try {
+        $db         = $dbConnection->selectDatabase('ferreteria');
+        $collection = $db->selectCollection('products');
+        $filter     = ['_id' => $productId];
 
-    $deleteLocalMsg  = '';
-    $deleteRemoteMsg = '';
-    $deleteSuccess   = false;
-
-    // 3. Intentar eliminar en LOCAL
-    if ($localConexion) {
-        try {
-            $dbLocal         = $localConexion->selectDatabase('ferreteria');
-            $collectionLocal = $dbLocal->selectCollection('products');
-            $resultLocal     = $collectionLocal->deleteOne($filter);
-
-            if ($resultLocal->getDeletedCount() > 0) {
-                $deleteLocalMsg = "Producto con ID '$productId' eliminado en LOCAL.";
-                $deleteSuccess  = true;
-            } else {
-                $deleteLocalMsg = "Producto con ID '$productId' no encontrado en LOCAL.";
-            }
-        } catch (MongoDB\Driver\Exception\Exception $e) {
-            $deleteLocalMsg = "Error al eliminar en LOCAL: " . $e->getMessage();
+        $result = $collection->deleteOne($filter);
+        if ($result->getDeletedCount() === 0) {
+            // No existía el documento
+            http_response_code(404);
+            echo json_encode([
+                'status'  => 'error',
+                'message' => "Producto con ID '$productId' no encontrado en $connectionType.",
+                'db'      => $connectionType
+            ]);
+        } else {
+            // Eliminado correctamente
+            http_response_code(200);
+            echo json_encode([
+                'status'  => 'success',
+                'message' => "Producto con ID '$productId' eliminado en $connectionType.",
+                'db'      => $connectionType
+            ]);
         }
-    } else {
-        $deleteLocalMsg = "Conexión LOCAL no disponible. No se pudo eliminar.";
-    }
-
-    // 4. Intentar eliminar en REMOTO
-    if ($atlasConexion) {
-        try {
-            $dbAtlas          = $atlasConexion->selectDatabase('ferreteria');
-            $collectionRemote = $dbAtlas->selectCollection('products');
-            $resultRemote     = $collectionRemote->deleteOne($filter);
-
-            if ($resultRemote->getDeletedCount() > 0) {
-                $deleteRemoteMsg = "Producto con ID '$productId' eliminado en REMOTO.";
-                $deleteSuccess   = true;
-            } else {
-                $deleteRemoteMsg = "Producto con ID '$productId' no encontrado en REMOTO.";
-            }
-        } catch (MongoDB\Driver\Exception\Exception $e) {
-            $deleteRemoteMsg = "Error al eliminar en REMOTO: " . $e->getMessage();
-        }
-    } else {
-        $deleteRemoteMsg = "Conexión REMOTA no disponible. No se pudo eliminar.";
-    }
-
-    // 5. Responder según si al menos una eliminación fue exitosa
-    if ($deleteSuccess) {
-        http_response_code(200);
+    } catch (MongoDB\Driver\Exception\Exception $e) {
+        http_response_code(500);
         echo json_encode([
-            'status'         => 'success',
-            'mensaje_local'  => $deleteLocalMsg,
-            'mensaje_remoto' => $deleteRemoteMsg
-        ]);
-    } else {
-        http_response_code(400);
-        echo json_encode([
-            'status'         => 'error',
-            'mensaje_local'  => $deleteLocalMsg,
-            'mensaje_remoto' => $deleteRemoteMsg
+            'status'  => 'error',
+            'message' => "Error al eliminar en $connectionType: " . $e->getMessage()
         ]);
     }
 ?>

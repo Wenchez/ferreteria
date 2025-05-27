@@ -1,174 +1,121 @@
 <?php
-require __DIR__ . '/../../connections.php';
+    require __DIR__ . '/../../connections.php';
 
-header('Content-Type: application/json');
+    header('Content-Type: application/json');
 
-// Solo aceptar POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode([
-        "status"  => "error",
-        "message" => "Acceso inválido. Solo se permiten solicitudes POST."
-    ]);
-    exit;
-}
+    // Solo aceptar POST
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        echo json_encode([
+            "status"  => "error",
+            "message" => "Acceso inválido. Solo se permiten solicitudes POST."
+        ]);
+        exit;
+    }
 
-// 1. Obtener campos del formulario
-$productName  = trim($_POST['productName']   ?? '');
-$category     = trim($_POST['category']      ?? '');
-$supplierName = trim($_POST['supplierName']  ?? '');
-$stock        = isset($_POST['stock'])       ? (int) $_POST['stock']   : null;
-$price        = isset($_POST['price'])       ? (float) $_POST['price'] : null;
+    // 1. Obtener campo de elección de base de datos (por POST o GET)
+    $dbChoice = $_GET['db_choice'] ?? $_POST['db_choice'] ?? 'local';
 
-// 2. Validaciones básicas
-if ($productName === '' || $category === '' || $supplierName === '' || $stock === null || $price === null) {
-    http_response_code(400);
-    echo json_encode([
-        "status"  => "error",
-        "message" => "Faltan campos requeridos o están vacíos."
-    ]);
-    exit;
-}
+    // 2. Selección de conexión
+    if ($dbChoice === 'remote') {
+        $dbConnection   = $atlasConexion;
+        $connectionType = 'REMOTE';
+    } else {
+        $dbConnection   = $localConexion;
+        $connectionType = 'LOCAL';
+    }
 
-// 3. Verificar que el supplierName exista en alguna de las dos bases
-$supplierFilter = ['supplierName' => $supplierName];
-$supplierExistsLocal  = false;
-$supplierExistsRemote = false;
-$checkLocalMsg        = '';
-$checkRemoteMsg       = '';
+    if (!$dbConnection) {
+        http_response_code(500);
+        echo json_encode([
+            "status"  => "error",
+            "message" => "No se pudo establecer conexión con la base de datos seleccionada."
+        ]);
+        exit;
+    }
 
-if ($localConexion) {
+    // 3. Obtener campos del formulario
+    $productName  = trim($_POST['productName']   ?? '');
+    $category     = trim($_POST['category']      ?? '');
+    $supplierName = trim($_POST['supplierName']  ?? '');
+    $stock        = isset($_POST['stock'])       ? (int)   $_POST['stock']   : null;
+    $price        = isset($_POST['price'])       ? (float) $_POST['price']   : null;
+
+    // 4. Validaciones básicas
+    if ($productName === '' || $category === '' || $supplierName === '' || $stock === null || $price === null) {
+        http_response_code(400);
+        echo json_encode([
+            "status"  => "error",
+            "message" => "Faltan campos requeridos o están vacíos."
+        ]);
+        exit;
+    }
+
     try {
-        $dbLocal          = $localConexion->selectDatabase('ferreteria');
-        $collectionSupLoc = $dbLocal->selectCollection('suppliers');
-        $foundLocal       = $collectionSupLoc->findOne($supplierFilter);
-        if ($foundLocal) {
-            $supplierExistsLocal = true;
-        } else {
-            $checkLocalMsg = "Proveedor '$supplierName' no existe en LOCAL.";
+        $db               = $dbConnection->selectDatabase('ferreteria');
+        $collectionSup    = $db->selectCollection('suppliers');
+        $foundSupplier    = $collectionSup->findOne(['supplierName' => $supplierName]);
+
+        if (!$foundSupplier) {
+            http_response_code(400);
+            echo json_encode([
+                "status"  => "error",
+                "message" => "Proveedor '$supplierName' no existe en la base seleccionada ($connectionType)."
+            ]);
+            exit;
         }
     } catch (MongoDB\Driver\Exception\Exception $e) {
-        $checkLocalMsg = "Error al verificar proveedor en LOCAL: " . $e->getMessage();
+        http_response_code(500);
+        echo json_encode([
+            "status"  => "error",
+            "message" => "Error al verificar proveedor en $connectionType: " . $e->getMessage()
+        ]);
+        exit;
     }
-} else {
-    $checkLocalMsg = "Conexión LOCAL no disponible para verificar proveedor.";
-}
 
-if ($atlasConexion) {
+    // 5. Generar un _id único con formato "PROD_XXX"
+    function generateUniqueProductId($collection) {
+        $count   = $collection->countDocuments();
+        $counter = $count + 1;
+
+        do {
+            $candidate = sprintf("PROD_%03d", $counter);
+            $exists    = $collection->findOne(['_id' => $candidate]);
+            if ($exists === null) {
+                return $candidate;
+            }
+            $counter++;
+        } while (true);
+    }
+
     try {
-        $dbAtlas           = $atlasConexion->selectDatabase('ferreteria');
-        $collectionSupAtl  = $dbAtlas->selectCollection('suppliers');
-        $foundRemote       = $collectionSupAtl->findOne($supplierFilter);
-        if ($foundRemote) {
-            $supplierExistsRemote = true;
-        } else {
-            $checkRemoteMsg = "Proveedor '$supplierName' no existe en REMOTO.";
-        }
+        $collectionProd = $db->selectCollection('products');
+        $newId          = generateUniqueProductId($collectionProd);
+
+        // 6. Construir el documento con el _id generado
+        $newProduct = [
+            '_id'          => $newId,
+            'productName'  => $productName,
+            'category'     => $category,
+            'supplierName' => $supplierName,
+            'stock'        => $stock,
+            'price'        => $price
+        ];
+
+        // 7. Insertar en la base elegida
+        $insertResult = $collectionProd->insertOne($newProduct);
+
+        http_response_code(200);
+        echo json_encode([
+            "status"      => "success",
+            "inserted_id" => $newId,
+            "db"          => $connectionType
+        ]);
     } catch (MongoDB\Driver\Exception\Exception $e) {
-        $checkRemoteMsg = "Error al verificar proveedor en REMOTO: " . $e->getMessage();
+        http_response_code(500);
+        echo json_encode([
+            "status"  => "error",
+            "message" => "Error al insertar en $connectionType: " . $e->getMessage()
+        ]);
     }
-} else {
-    $checkRemoteMsg = "Conexión REMOTA no disponible para verificar proveedor.";
-}
-
-if (!$supplierExistsLocal && !$supplierExistsRemote) {
-    http_response_code(400);
-    echo json_encode([
-        "status"         => "error",
-        "message_local"  => $checkLocalMsg,
-        "message_remote" => $checkRemoteMsg
-    ]);
-    exit;
-}
-
-// 4. Generar un _id único con formato "PROD_XXX"
-function generateUniqueProductId($collection) {
-    // Tomar la cantidad total de documentos como punto de partida
-    $count = $collection->countDocuments();
-    $counter = $count + 1;
-
-    do {
-        $candidate = sprintf("PROD_%03d", $counter);
-        $exists = $collection->findOne(['_id' => $candidate]);
-        if ($exists === null) {
-            return $candidate;
-        }
-        $counter++;
-    } while (true);
-}
-
-// Primero, generar el ID usando la colección LOCAL (cualquiera sirve, pero tomamos LOCAL si está disponible)
-if ($localConexion) {
-    $collectionProdLoc = $dbLocal->selectCollection('products');
-    $newId = generateUniqueProductId($collectionProdLoc);
-} elseif ($atlasConexion) {
-    $collectionProdAtl = $dbAtlas->selectCollection('products');
-    $newId = generateUniqueProductId($collectionProdAtl);
-} else {
-    http_response_code(500);
-    echo json_encode([
-        "status"  => "error",
-        "message" => "Ninguna conexión a BD está disponible para generar ID."
-    ]);
-    exit;
-}
-
-// 5. Construir el documento con el _id generado
-$newProduct = [
-    '_id'          => $newId,
-    'productName'  => $productName,
-    'category'     => $category,
-    'supplierName' => $supplierName,
-    'stock'        => $stock,
-    'price'        => $price
-];
-
-$insertLocalMsg  = '';
-$insertRemoteMsg = '';
-$insertSuccess   = false;
-
-// 6. Intentar insertar en LOCAL usando el mismo _id
-if ($localConexion) {
-    try {
-        $resLocal = $collectionProdLoc->insertOne($newProduct);
-        $insertLocalMsg  = "Producto insertado en LOCAL (ID: $newId).";
-        $insertSuccess   = true;
-    } catch (MongoDB\Driver\Exception\Exception $e) {
-        $insertLocalMsg = "Error al insertar en LOCAL: " . $e->getMessage();
-    }
-} else {
-    $insertLocalMsg = "Conexión LOCAL no disponible. No se pudo insertar.";
-}
-
-// 7. Intentar insertar en REMOTO usando el mismo _id
-if ($atlasConexion) {
-    try {
-        $collectionProdAtl = $dbAtlas->selectCollection('products');
-        $resRemote = $collectionProdAtl->insertOne($newProduct);
-        $insertRemoteMsg  = "Producto insertado en REMOTO (ID: $newId).";
-        $insertSuccess    = true;
-    } catch (MongoDB\Driver\Exception\Exception $e) {
-        $insertRemoteMsg = "Error al insertar en REMOTO: " . $e->getMessage();
-    }
-} else {
-    $insertRemoteMsg = "Conexión REMOTA no disponible. No se pudo insertar.";
-}
-
-// 8. Devolver respuesta
-if ($insertSuccess) {
-    http_response_code(200);
-    echo json_encode([
-        "status"         => "success",
-        "inserted_id"    => $newId,
-        "message_local"  => $insertLocalMsg,
-        "message_remote" => $insertRemoteMsg
-    ]);
-} else {
-    http_response_code(500);
-    echo json_encode([
-        "status"         => "error",
-        "message_local"  => $insertLocalMsg,
-        "message_remote" => $insertRemoteMsg
-    ]);
-}
 ?>

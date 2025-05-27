@@ -13,12 +13,28 @@
     // PHP no llena $_PUT automáticamente, por lo que hay que parsear php://input
     parse_str(file_get_contents("php://input"), $putVars);
 
-    $productId     = $putVars['product_id']     ?? '';
-    $productName   = $putVars['productName']    ?? '';
-    $category      = $putVars['category']       ?? '';
-    $supplierName  = $putVars['supplierName']   ?? '';
-    $stock         = isset($putVars['stock'])   ? (int) $putVars['stock'] : null;
-    $price         = isset($putVars['price'])   ? (float) $putVars['price'] : null;
+    // Leer elección de base de datos (GET o en body)
+    $dbChoice    = $_GET['db_choice'] ?? $putVars['db_choice'] ?? 'local';
+    if ($dbChoice === 'remote') {
+        $dbConnection   = $atlasConexion;
+        $connectionType = 'REMOTE';
+    } else {
+        $dbConnection   = $localConexion;
+        $connectionType = 'LOCAL';
+    }
+
+    if (!$dbConnection) {
+        http_response_code(500);
+        echo json_encode(["error" => "No se pudo establecer conexión con la base de datos seleccionada."]);
+        exit;
+    }
+
+    $productId    = $putVars['product_id']     ?? '';
+    $productName  = $putVars['productName']    ?? '';
+    $category     = $putVars['category']       ?? '';
+    $supplierName = $putVars['supplierName']   ?? '';
+    $stock        = isset($putVars['stock'])   ? (int)   $putVars['stock'] : null;
+    $price        = isset($putVars['price'])   ? (float) $putVars['price'] : null;
 
     // Validar que haya ID
     if (empty($productId)) {
@@ -26,11 +42,10 @@
         echo json_encode(["error" => "Falta el campo 'product_id'."]);
         exit;
     }
-    // Construir el filtro y los datos a actualizar
-    $filter = ['_id' => $productId];
-    $updateFields = [];
 
-    // Solo agregar al $set los campos que vengan no vacíos (para evitar sobreescribir con cadena vacía)
+    // Construir el filtro y los datos a actualizar
+    $filter       = ['_id' => $productId];
+    $updateFields = [];
     if ($productName !== '')  { $updateFields['productName']  = $productName; }
     if ($category !== '')     { $updateFields['category']     = $category; }
     if ($supplierName !== '') { $updateFields['supplierName'] = $supplierName; }
@@ -45,73 +60,40 @@
 
     $updateData = ['$set' => $updateFields];
 
-    // Bandera para saber si al menos una actualización tuvo éxito
-    $updateSuccessful = false;
+    try {
+        $db         = $dbConnection->selectDatabase('ferreteria');
+        $collection = $db->selectCollection('products');
 
-    // --- Actualizar en la base de datos LOCAL ---
-    if ($localConexion) {
-        try {
-            $dbLocal        = $localConexion->selectDatabase('ferreteria');
-            $collectionLoc  = $dbLocal->selectCollection('products');
-
-            $resultLocal = $collectionLoc->updateOne($filter, $updateData);
-            if ($resultLocal->getMatchedCount() === 0) {
-                $respuestaLocal = "No se encontró producto con ID '$productId' en LOCAL.";
-            }
-            elseif ($resultLocal->getModifiedCount() === 0) {
-                $respuestaLocal = "Producto con ID '$productId' en LOCAL existe, pero los datos ya estaban iguales.";
-                $updateSuccessful = true;
-            }
-            else {
-                $respuestaLocal = "Producto con ID '$productId' actualizado en LOCAL.";
-                $updateSuccessful = true;
-            }
-        } catch (MongoDB\Driver\Exception\Exception $e) {
-            $respuestaLocal = "Error al actualizar en LOCAL: " . $e->getMessage();
+        $result = $collection->updateOne($filter, $updateData);
+        if ($result->getMatchedCount() === 0) {
+            http_response_code(404);
+            echo json_encode([
+                "status"  => "error",
+                "message" => "No se encontró producto con ID '$productId' en $connectionType."
+            ]);
+            exit;
         }
-    } else {
-        $respuestaLocal = "Conexión LOCAL no disponible. No se pudo actualizar.";
-    }
 
-    // --- Actualizar en la base de datos REMOTA (ATLAS) ---
-    if ($atlasConexion) {
-        try {
-            $dbAtlas         = $atlasConexion->selectDatabase('ferreteria');
-            $collectionAtlas = $dbAtlas->selectCollection('products');
-
-            $resultAtlas = $collectionAtlas->updateOne($filter, $updateData);
-            if ($resultAtlas->getMatchedCount() === 0) {
-                $respuestaAtlas = "No se encontró producto con ID '$productId' en REMOTO.";
-            }
-            elseif ($resultAtlas->getModifiedCount() === 0) {
-                $respuestaAtlas = "Producto con ID '$productId' en REMOTO existe, pero los datos ya estaban iguales.";
-                $updateSuccessful = true;
-            }
-            else {
-                $respuestaAtlas = "Producto con ID '$productId' actualizado en REMOTO.";
-                $updateSuccessful = true;
-            }
-        } catch (MongoDB\Driver\Exception\Exception $e) {
-            $respuestaAtlas = "Error al actualizar en REMOTO: " . $e->getMessage();
+        if ($result->getModifiedCount() === 0) {
+            // Existe pero sin cambios
+            http_response_code(200);
+            echo json_encode([
+                "status"  => "success",
+                "message" => "Producto con ID '$productId' en $connectionType existe, pero los datos ya estaban iguales."
+            ]);
+        } else {
+            // Actualizado correctamente
+            http_response_code(200);
+            echo json_encode([
+                "status"  => "success",
+                "message" => "Producto con ID '$productId' actualizado en $connectionType."
+            ]);
         }
-    } else {
-        $respuestaAtlas = "Conexión REMOTA no disponible. No se pudo actualizar.";
-    }
-
-    // Devolver resultado según haya éxito o no
-    if ($updateSuccessful) {
-        http_response_code(200);
+    } catch (MongoDB\Driver\Exception\Exception $e) {
+        http_response_code(500);
         echo json_encode([
-            "status"         => "success",
-            "mensaje_local"  => $respuestaLocal,
-            "mensaje_remoto" => $respuestaAtlas
-        ]);
-    } else {
-        http_response_code(400);
-        echo json_encode([
-            "status"         => "error",
-            "mensaje_local"  => $respuestaLocal,
-            "mensaje_remoto" => $respuestaAtlas
+            "status"  => "error",
+            "message" => "Error al actualizar en $connectionType: " . $e->getMessage()
         ]);
     }
 ?>

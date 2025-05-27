@@ -29,7 +29,7 @@ if (!isset($_SESSION['UserID'])) {
                 </div>
             </div>
             
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-12">
                     <div class="card shadow">
                         <div class="card-body">

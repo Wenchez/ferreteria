@@ -20,10 +20,10 @@ function deleteProducto(productId){
         data: { id: productId, db_choice: dbChoice },
         success: function (response) {
             if (response.status === "success") {
-                console.log("Producto eliminado:", response.mensaje_local);
+                console.log("Producto eliminado:", response.message);
                 getProductos(); // Recargar la tabla
             } else {
-                console.error("Error al eliminar:", response.mensaje_local, response.mensaje_remoto);
+                console.error("Error al eliminar:", response.message, response.message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {

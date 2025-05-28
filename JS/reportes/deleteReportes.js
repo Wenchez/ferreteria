@@ -13,16 +13,17 @@ $(document).ready(function () {
 });
 
 function deleteVenta(saleId){
+    dbChoice = $('#databaseSwitch').val();
     $.ajax({
         url: '/ferreteria/PHP/controladores/ventas/deleteVentas.php',
         type: 'POST',
-        data: { id: saleId },
+        data: { id: saleId, db_choice: dbChoice },
         success: function (response) {
             if (response.status === "success") {
-                console.log("Venta eliminada:", response.mensaje_local);
+                console.log("Venta eliminada:", response.message);
                 getReportes(); // Recargar la tabla
             } else {
-                console.error("Error al eliminar:", response.mensaje_local, response.mensaje_remoto);
+                console.error("Error al eliminar:", response.message, response.message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {

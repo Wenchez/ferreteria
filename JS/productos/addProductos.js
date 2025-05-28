@@ -40,12 +40,12 @@ function addProduct(productName, category, supplierName, stock, price, dbChoice)
         data: datos,
         success: function(response) {
             if (response.status === "success") {
-                console.log("Creacion exitosa:", response.mensaje_local, response.mensaje_remoto);
+                console.log("Creacion exitosa:", response.message, response.message);
                 $('#addProductModal').modal('hide');
                 getProductos();
                 // - Mostrar una alerta o notificación al usuario
             } else {
-                console.error("Error al agregar:", response.mensaje_local, response.mensaje_remoto);
+                console.error("Error al agregar:", response.message, response.message);
                 // Mostrar mensaje de error al usuario (por ejemplo, en un div dentro del modal)
             }
         },

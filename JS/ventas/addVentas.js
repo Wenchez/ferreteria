@@ -40,7 +40,8 @@ function addSale(){
 
     const payload = {
         clientName: clientName,
-        items:      itemsList
+        items:      itemsList,
+        db_choice: $('#databaseSwitch').val()
     };
 
     console.log(payload);

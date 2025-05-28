@@ -66,3 +66,4 @@ if ($action === 'getSupplierById' && isset($_GET['supplierId'])) {
 }
 
 echo json_encode(['error' => 'Acción no válida']);
+?>

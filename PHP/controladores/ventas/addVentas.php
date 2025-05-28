@@ -40,7 +40,26 @@ if ($data === null) {
     exit;
 }
 
-// 4) Validar campos obligatorios
+// 4) Obtener elección de base de datos (GET o en JSON)
+$dbChoice = $_GET['db_choice'] ?? $data['db_choice'] ?? 'local';
+if ($dbChoice === 'remote') {
+    $dbConnection   = $atlasConexion;
+    $connectionType = 'REMOTE';
+} else {
+    $dbConnection   = $localConexion;
+    $connectionType = 'LOCAL';
+}
+
+if (!$dbConnection) {
+    http_response_code(500);
+    echo json_encode([
+        "status"  => "error",
+        "message" => "No se pudo establecer conexión con la base de datos seleccionada."
+    ]);
+    exit;
+}
+
+// 5) Validar campos obligatorios
 $clientName = trim($data['clientName'] ?? '');
 $itemsArray = $data['items']     ?? [];
 if ($clientName === '' || !is_array($itemsArray) || count($itemsArray) === 0) {
@@ -52,7 +71,7 @@ if ($clientName === '' || !is_array($itemsArray) || count($itemsArray) === 0) {
     exit;
 }
 
-// 5) Convertir userId a ObjectId
+// 6) Convertir userId a ObjectId
 try {
     $userIdObj = new MongoDB\BSON\ObjectId($userIdStr);
 } catch (\Exception $e) {
@@ -64,34 +83,7 @@ try {
     exit;
 }
 
-// 6) Función para obtener stock actual de un producto (ahora acepta string)
-function getCurrentStock($conexion, string $productId) {
-    $db = $conexion->selectDatabase('ferreteria');
-    $col = $db->selectCollection('products');
-    $prod = $col->findOne(['_id' => $productId]);
-    return isset($prod['stock']) ? (int)$prod['stock'] : null;
-}
-
-// 7) Función para llamar a subProd.php y actualizar stock
-function callUpdateStockEndpoint(string $productIdStr, int $newStock) {
-    $url = "http://localhost/ferreteria/PHP/controladores/ventas/subProd.php";
-    $data = http_build_query([
-        'product_id'         => $productIdStr,
-        'quantityActualized' => $newStock
-    ]);
-    $opts = [
-        'http' => [
-            'method'  => 'PUT',
-            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n"
-                       . "Content-Length: " . strlen($data) . "\r\n",
-            'content' => $data
-        ]
-    ];
-    $context = stream_context_create($opts);
-    @file_get_contents($url, false, $context);
-}
-
-// 8) Procesar cada ítem: validar, convertir y armar documento de venta
+// 7) Procesar cada ítem: validar, convertir y armar documento de venta
 $itemsDocument = [];
 $totalSum = 0.0;
 
@@ -145,14 +137,102 @@ foreach ($itemsArray as $idx => $item) {
     ];
 }
 
-// 9) Calcular IVA y total de la venta
+// 8) Calcular IVA y total de la venta
 $ivaVenta   = round($totalSum * 0.16, 2);
 $totalVenta = round($totalSum + $ivaVenta, 2);
 
-// 10) Generar saleDate
+// 9) Generar saleDate
 $saleDateBson = new MongoDB\BSON\UTCDateTime((int)(microtime(true) * 1000));
 
-// 11) Función para generar ID tipo TICKET-00001
+// 10) Obtener nuevo ID de venta usando la base seleccionada
+try {
+    $db       = $dbConnection->selectDatabase('ferreteria');
+    $salesCol = $db->selectCollection('sales');
+    $newSaleId = generateUniqueSaleId($salesCol);
+} catch (\Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        "status"  => "error",
+        "message" => "Error al generar ID de venta: " . $e->getMessage()
+    ]);
+    exit;
+}
+
+// 11) Armar documento completo de la venta
+$saleDocument = [
+    '_id'        => $newSaleId,
+    'saleDate'   => $saleDateBson,
+    'subTotal'   => (double) $totalSum,
+    'iva'        => (double) $ivaVenta,
+    'total'      => (double) $totalVenta,
+    'userId'     => $userIdObj,
+    'userName'   => $userName,
+    'clientName' => $clientName,
+    'items'      => $itemsDocument
+];
+
+// 12) Insertar en la base seleccionada
+try {
+    $res = $salesCol->insertOne($saleDocument);
+    // 13) Si la venta se guardó, actualizar stock de cada producto solo en la misma base
+    foreach ($itemsDocument as $item) {
+        $productIdStr    = $item['productId'];
+        $cantidadVendida = $item['quantity'];
+
+        // Obtener stock actual
+        $stockActual = getCurrentStock($dbConnection, $productIdStr);
+        if ($stockActual !== null) {
+            $nuevoStock = max(0, $stockActual - $cantidadVendida);
+            callUpdateStockEndpoint($productIdStr, $nuevoStock, $dbChoice);
+        }
+    }
+
+    http_response_code(200);
+    echo json_encode([
+        "status"      => "success",
+        "inserted_id" => $newSaleId,
+        "db"          => $connectionType
+    ]);
+    exit;
+} catch (MongoDB\Driver\Exception\Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        "status"  => "error",
+        "message" => "Error al insertar venta en $connectionType: " . $e->getMessage()
+    ]);
+    exit;
+}
+// Funciones Auxiliares
+
+// Función para obtener stock actual de un producto (ahora acepta string)
+function getCurrentStock($conexion, string $productId) {
+    $db = $conexion->selectDatabase('ferreteria');
+    $col = $db->selectCollection('products');
+    $prod = $col->findOne(['_id' => $productId]);
+    return isset($prod['stock']) ? (int)$prod['stock'] : null;
+}
+
+// Función para llamar a subProd.php y actualizar stock
+function callUpdateStockEndpoint(string $productIdStr, int $newStock, string $dbChoice) {
+    $url = "http://localhost/ferreteria/PHP/controladores/ventas/subProd.php";
+    $data = http_build_query([
+        'product_id'         => $productIdStr,
+        'quantityActualized' => $newStock,
+        'db_choice'         => $dbChoice
+    ]);
+    $opts = [
+        'http' => [
+            'method'  => 'PUT',
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n"
+                       . "Content-Length: " . strlen($data) . "\r\n",
+            'content' => $data
+        ]
+    ];
+    $context = stream_context_create($opts);
+    @file_get_contents($url, false, $context);
+}
+
+// Función para generar ID tipo TICKET-00001
 function generateUniqueSaleId($collection) {
     $count = $collection->countDocuments();
     $counter = $count + 1;
@@ -165,109 +245,4 @@ function generateUniqueSaleId($collection) {
         $counter++;
     } while (true);
 }
-
-// 12) Obtener nuevo ID de venta
-if ($localConexion) {
-    $dbLocal    = $localConexion->selectDatabase('ferreteria');
-    $salesLocal = $dbLocal->selectCollection('sales');
-    $newSaleId  = generateUniqueSaleId($salesLocal);
-} elseif ($atlasConexion) {
-    $dbAtlas     = $atlasConexion->selectDatabase('ferreteria');
-    $salesRemote = $dbAtlas->selectCollection('sales');
-    $newSaleId   = generateUniqueSaleId($salesRemote);
-} else {
-    http_response_code(500);
-    echo json_encode([
-        "status"  => "error",
-        "message" => "Ninguna conexión a BD está disponible para generar ID."
-    ]);
-    exit;
-}
-
-// 13) Armar documento completo de la venta
-$saleDocument = [
-    '_id'        => $newSaleId,
-    'saleDate'   => $saleDateBson,
-    'subTotal'   => (double) $totalSum,
-    'total'      => (double) $totalVenta,
-    'userId'     => $userIdObj,
-    'userName'   => $userName,
-    'clientName' => $clientName,
-    'items'      => $itemsDocument
-];
-
-// 14) Insertar en LOCAL y REMOTO
-$insertLocalMsg  = '';
-$insertRemoteMsg = '';
-$insertSuccess   = false;
-
-if ($localConexion) {
-    try {
-        $resLocal       = $salesLocal->insertOne($saleDocument);
-        $insertLocalMsg = "Venta insertada en LOCAL (ID: $newSaleId).";
-        $insertSuccess  = true;
-    } catch (MongoDB\Driver\Exception\Exception $e) {
-        $insertLocalMsg = "Error al insertar venta en LOCAL: " . $e->getMessage();
-    }
-} else {
-    $insertLocalMsg = "Conexión LOCAL no disponible para insertar venta.";
-}
-
-if ($atlasConexion) {
-    try {
-        $dbAtlas       = $atlasConexion->selectDatabase('ferreteria');
-        $salesRemote   = $dbAtlas->selectCollection('sales');
-        $resRemote     = $salesRemote->insertOne($saleDocument);
-        $insertRemoteMsg = "Venta insertada en REMOTO (ID: $newSaleId).";
-        $insertSuccess   = true;
-    } catch (MongoDB\Driver\Exception\Exception $e) {
-        $insertRemoteMsg = "Error al insertar venta en REMOTO: " . $e->getMessage();
-    }
-} else {
-    $insertRemoteMsg = "Conexión REMOTA no disponible para insertar venta.";
-}
-
-// 15) Si la venta se guardó, actualizar stock de cada producto
-if ($insertSuccess) {
-    foreach ($itemsDocument as $item) {
-        $productIdStr    = $item['productId'];
-        $cantidadVendida = $item['quantity'];
-
-        // Actualizar en LOCAL
-        if ($localConexion) {
-            $stockActualLocal = getCurrentStock($localConexion, $productIdStr);
-            if ($stockActualLocal !== null) {
-                $nuevoStockLocal = max(0, $stockActualLocal - $cantidadVendida);
-                callUpdateStockEndpoint($productIdStr, $nuevoStockLocal);
-            }
-        }
-
-        // Actualizar en REMOTO
-        if ($atlasConexion) {
-            $stockActualRemote = getCurrentStock($atlasConexion, $productIdStr);
-            if ($stockActualRemote !== null) {
-                $nuevoStockRemote = max(0, $stockActualRemote - $cantidadVendida);
-                callUpdateStockEndpoint($productIdStr, $nuevoStockRemote);
-            }
-        }
-    }
-
-    // 16) Responder éxito
-    http_response_code(200);
-    echo json_encode([
-        "status"         => "success",
-        "inserted_id"    => $newSaleId,
-        "message_local"  => $insertLocalMsg,
-        "message_remote" => $insertRemoteMsg
-    ]);
-    exit;
-}
-
-// 17) Si falla la inserción de la venta
-http_response_code(500);
-echo json_encode([
-    "status"         => "error",
-    "message_local"  => $insertLocalMsg,
-    "message_remote" => $insertRemoteMsg
-]);
 ?>

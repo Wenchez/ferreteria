@@ -3,6 +3,11 @@ $(document).ready(function() {
     $('#clean').on('click', function() {
         clearAllFields();
     });
+
+    $('#databaseSwitch').on('click', function() {
+        console.log("Se cambio de base de datos")
+        clearAllFields();// Limpia todos los campos del formulario
+    });
 });
 
 function clearAllFields() {

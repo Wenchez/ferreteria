@@ -29,7 +29,6 @@ function modProduct(productId, productName, category, supplierName, stock, price
     }
 
     // 3) Construir los datos a enviar por PUT
-    //    jQuery enviará esto en el cuerpo como application/x-www-form-urlencoded
     const datos = {
         product_id:    productId,
         productName:   productName,
@@ -47,18 +46,12 @@ function modProduct(productId, productName, category, supplierName, stock, price
         data: datos,
         success: function(response) {
             // 5) Manejar la respuesta del backend
-            //    Se espera un JSON como { status: "success", mensaje_local: "...", mensaje_remoto: "..." }
             if (response.status === "success") {
-                console.log("Modificación exitosa:", response.mensaje_local, response.mensaje_remoto);
-                // Aquí puedes:
-                // - Cerrar el modal manualmente:
+                console.log("Modificación exitosa:", response.message, response.message);
                 $('#modProductModal').modal('hide');
-                // - Refrescar la tabla de productos:
                 getProductos();
-                // - Mostrar una alerta o notificación al usuario
             } else {
-                console.error("Error al modificar:", response.mensaje_local, response.mensaje_remoto);
-                // Mostrar mensaje de error al usuario (por ejemplo, en un div dentro del modal)
+                console.error("Error al modificar:", response.message, response.message);
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {

@@ -43,3 +43,4 @@ try {
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => "Error al modificar en $origen: " . $e->getMessage()]);
 }
+?>

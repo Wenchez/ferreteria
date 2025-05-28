@@ -8,6 +8,7 @@ if (!isset($_SESSION['UserID'])) {
     exit(); // Es crucial llamar a exit() después de header()
 }
 
+$isVentas = $_SESSION['UserType'] === 'ventas';
 // Si la sesión 'UserID' existe, el usuario está loggeado
 ?>
 <!DOCTYPE html>
@@ -72,7 +73,7 @@ if (!isset($_SESSION['UserID'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 <?= $isVentas ? 'd-none' : '' ?>">
                         <div class="card h-100 shadow-sm">
                             <div class="card-body text-center text-info">
                                 <div class="mb-3">
@@ -84,7 +85,7 @@ if (!isset($_SESSION['UserID'])) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 <?= $isVentas ? 'd-none' : '' ?>">
                         <div class="card h-100 shadow-sm">
                             <div class="card-body text-center text-warning">
                                 <div class="mb-3">
@@ -93,6 +94,18 @@ if (!isset($_SESSION['UserID'])) {
                                 <h5 class="card-title">Proveedores</h5>
                                 <p class="card-text">Gestiona la información de tus proveedores.</p>
                                 <a href="modulos/proveedores.php" class="btn btn-outline-warning btn-sm">Ver proveedores</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 <?= $isVentas ? 'd-none' : '' ?>">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center text-purple">
+                                <div class="mb-3">
+                                    <i class="bi bi-person fs-1"></i>
+                                </div>
+                                <h5 class="card-title">Usuarios</h5>
+                                <p class="card-text">Gestiona a los usuarios.</p>
+                                <a href="modulos/usuarios.php" class="btn btn-outline-purple btn-sm">Gestiona a los usuarios</a>
                             </div>
                         </div>
                     </div>

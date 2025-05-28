@@ -4,6 +4,8 @@ if (!isset($_SESSION['UserID'])) {
     header("Location: ../login.php");
     exit();
 }
+
+$isVentas = $_SESSION['UserType'] === 'ventas';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -15,6 +17,10 @@ if (!isset($_SESSION['UserID'])) {
     <script src="../JS/productos/getProductos.js"></script>
     <script src="../JS/productos/modProductos.js"></script>
     <script src="../JS/productos/deleteProductos.js"></script>
+
+    <script>
+        const userType = "<?= $_SESSION['UserType'] ?>";
+    </script>
 </head>
 <body class="bg-light d-flex">
     <!-- Sidebar -->
@@ -29,7 +35,7 @@ if (!isset($_SESSION['UserID'])) {
             <div class="row">
                 <div class="d-flex justify-content-between align-items-center col-12">
                     <h2 class="text-primary"><i class="bi bi-box-seam"></i> Productos</h2>
-                    <button id="add_Product" class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <button id="add_Product" class="btn btn-primary d-flex align-items-center <?= $isVentas ? 'd-none' : '' ?>" data-bs-toggle="modal" data-bs-target="#addProductModal">
                         <i class="bi bi-plus me-2"></i> Añadir producto
                     </button>
                 </div>
@@ -54,7 +60,7 @@ if (!isset($_SESSION['UserID'])) {
                                     <th scope="col">Stock</th>
                                     <th scope="col">Proveedor</th>
                                     <th scope="col">Estado</th>
-                                    <th scope="col">Acciones</th>
+                                    <th class="<?= $isVentas ? 'd-none' : '' ?>" scope="col">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>

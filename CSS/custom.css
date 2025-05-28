@@ -11,3 +11,38 @@
     background-color: #d09dff !important;
     font-weight: bold;
 }
+
+/* --- NEW: btn-outline-purple --- */
+.btn-outline-purple {
+    color: #6f42c1; /* Text color is purple */
+    border-color: #6f42c1; /* Border color is purple */
+    background-color: transparent; /* No background by default */
+}
+
+.btn-outline-purple:hover {
+    color: white; /* Text color white on hover */
+    background-color: #6f42c1; /* Background turns purple on hover */
+    border-color: #6f42c1; /* Border remains purple */
+}
+
+.btn-outline-purple:focus,
+.btn-outline-purple.focus {
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.5); /* Purple focus ring */
+}
+
+.btn-outline-purple.active,
+.btn-outline-purple:active,
+.btn-check:checked + .btn-outline-purple {
+    color: white; /* Text color white when active/pressed */
+    background-color: #6f42c1; /* Background turns purple when active/pressed */
+    border-color: #6f42c1; /* Border remains purple */
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.5); /* Optional: add focus shadow when active */
+}
+
+.btn-outline-purple:disabled,
+.btn-outline-purple.disabled {
+    color: #6f42c1; /* Text color remains purple */
+    background-color: transparent; /* Background remains transparent */
+    border-color: #6f42c1; /* Border remains purple */
+    opacity: 0.65;
+}

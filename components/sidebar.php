@@ -8,6 +8,8 @@
     $base = (strpos($_SERVER['PHP_SELF'], '/modulos/') !== false) ? '.' : 'modulos';
     $logoutBase = (strpos($_SERVER['PHP_SELF'], '/modulos/') !== false) ? '../PHP/logout.php' : 'PHP/logout.php';
     $dashboardBase = (strpos($_SERVER['PHP_SELF'], '/modulos/') !== false) ? '../dashboard.php' : 'dashboard.php';
+
+    $isVentas = $_SESSION['UserType'] === 'ventas';
 ?>
 
 <nav id="sidebar" class="bg-dark text-white flex-shrink-0 p-3 d-flex flex-column" style="width: 250px; min-height: 100vh; transition: width 0.3s;">
@@ -38,17 +40,17 @@
                 <i class="bi bi-box-seam me-2"></i> <span class="sidebar-text">Productos</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
+        <li class="nav-item mb-2 <?= $isVentas ? 'd-none' : '' ?>">
             <a id="clientes" href="<?= $base ?>/clientes.php" class="nav-link text-white <?= active('clientes') ?>">
                 <i class="bi bi-people me-2"></i> <span class="sidebar-text">Clientes</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
+        <li class="nav-item mb-2 <?= $isVentas ? 'd-none' : '' ?>">
             <a id="proveedores" href="<?= $base ?>/proveedores.php" class="nav-link text-white <?= active('proveedores') ?>">
                 <i class="bi bi-truck me-2"></i> <span class="sidebar-text">Proveedores</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
+        <li class="nav-item mb-2 <?= $isVentas ? 'd-none' : '' ?>">
             <a id="usuarios" href="<?= $base ?>/usuarios.php" class="nav-link text-white <?= active('usuarios') ?>">
                 <i class="bi bi-people me-2"></i> <span class="sidebar-text">Usuarios</span>
             </a>

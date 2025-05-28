@@ -12,6 +12,11 @@ $(document).ready(function () {
         getReportes(clientName);
     });
 
+    $('#date').on("change", function () {
+        const clientName = $('#clientName').val();
+        getReportes(clientName);
+    });
+
     $(document).on("click", ".btn-detalle", function () {
         const $fila = $(this).closest("tr");
         const id = $fila.data("id");
@@ -101,9 +106,14 @@ function getReportes(clientName) {
             // Acciones (botones)
             const $accionesTd = $("<td>").addClass("d-flex text-wrap");
             const $btnDetalles  = $(`<button class="btn btn-success me-1 btn-detalle" data-id="${venta._id}" data-bs-toggle="modal" data-bs-target="#detailSaleModal">Detalles</button>`);
-            const $btnEliminar  = $(`<button class="btn btn-danger btn-eliminar" data-id="${venta._id}">Eliminar</button>`);
-            $accionesTd.append($btnDetalles, $btnEliminar);
-            $tr.append($accionesTd);
+            if (userType !== "ventas") {
+                const $btnEliminar  = $(`<button class="btn btn-danger btn-eliminar" data-id="${venta._id}">Eliminar</button>`);
+                $accionesTd.append($btnDetalles, $btnEliminar);
+                $tr.append($accionesTd);
+            } else{
+                $accionesTd.append($btnDetalles);
+                $tr.append($accionesTd);
+            }
 
             // Asignar _id a la fila
             $tr.attr("data-id", venta._id);

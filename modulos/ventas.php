@@ -27,7 +27,7 @@ if (!isset($_SESSION['UserID'])) {
             <div class="row">
                 <div class="d-flex justify-content-between align-items-center col-12">
                     <h2 class="mb-4 text-success"><i class="bi bi-cart"></i> Ventas</h2>
-                    <button id="clean" class="btn btn-outline-danger d-flex align-items-center">
+                    <button id="clean" class="btn btn-danger d-flex align-items-center">
                         <i class="bi bi-trash"></i> Limpiar
                     </button>
                 </div>

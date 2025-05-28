@@ -4,6 +4,11 @@ if (!isset($_SESSION['UserID'])) {
     header("Location: ../login.php");
     exit();
 }
+
+if($_SESSION['UserType'] == 'ventas'){
+    header("Location: ../dashboard.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

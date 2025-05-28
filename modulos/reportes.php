@@ -13,6 +13,10 @@ if (!isset($_SESSION['UserID'])) {
     <?php include "../components/header.html" ?>
     <script src="../JS/reportes/getReportes.js"></script>
     <script src="../JS/reportes/deleteReportes.js"></script>
+
+    <script>
+        const userType = "<?= $_SESSION['UserType'] ?>";
+    </script>
 </head>
 <body class="bg-light d-flex">
     <!-- Sidebar -->

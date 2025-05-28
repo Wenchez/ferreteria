@@ -44,6 +44,9 @@
                 $date = $_GET['date'] ?? '';
 
                 $filter = [];
+                $options = [
+                    'sort' => ['saleDate' => -1] // AQUI se agrega la ordenación: -1 para descendente (más nuevo a más viejo)
+                ];
 
                 // Filtro por nombre (si se proporcionó)
                 if (!empty($clientName)) {
@@ -52,7 +55,7 @@
 
                 // Filtro por fecha si es 'today'
                 if ($date === 'today') {
-                    $start = new DateTime('today', new DateTimeZone('America/Mexico_City'));
+                    $start = new DateTime('today', new DateTimeZone('America/Mazatlan'));
                     $end = clone $start;
                     $end->modify('+1 day');
 
@@ -63,7 +66,7 @@
                 }
 
                 try {
-                    $documentos = $coleccion->find($filter);
+                    $documentos = $coleccion->find($filter,$options);
 
                     $ventas = [];
                     foreach ($documentos as $venta) {

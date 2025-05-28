@@ -70,14 +70,16 @@ function getProductos(){
 
 
             // 4) Columna de “Acciones”: botones de Editar/Eliminar
-            const $accionesTd = $("<td>").addClass("d-flex text-wrap");
-            // Botón editar
-            const $btnEditar = $('<button class="btn btn-primary me-1 btn-editar" data-bs-toggle="modal" data-bs-target="#modProductModal">Editar</button>');
-            // Boton eliminar
-            const $btnEliminar = $('<button class="btn btn-danger btn-eliminar">Eliminar</button>');
+            if (userType !== "ventas") {
+                const $accionesTd = $("<td>").addClass("d-flex text-wrap");
+                // Botón editar
+                const $btnEditar = $('<button class="btn btn-primary me-1 btn-editar" data-bs-toggle="modal" data-bs-target="#modProductModal">Editar</button>');
+                // Botón eliminar
+                const $btnEliminar = $('<button class="btn btn-danger btn-eliminar">Eliminar</button>');
 
-            $accionesTd.append($btnEditar, $btnEliminar);
-            $tr.append($accionesTd);
+                $accionesTd.append($btnEditar, $btnEliminar);
+                $tr.append($accionesTd);
+            }
 
             // Le asignamos el _id
             $tr.attr("data-id", prod._id); 

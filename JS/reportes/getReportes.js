@@ -22,9 +22,10 @@ $(document).ready(function () {
         const id = $fila.data("id");
 
         // Asignar el id al input oculto
-        $("#editId").val(id);
+        $("#btnPrintTicket").attr("data-id", id);
         const ventaId = $(this).closest("tr").data("id");
         console.log("ID del venta a ver:", ventaId);
+
         getVentaByID(ventaId);
     });
 

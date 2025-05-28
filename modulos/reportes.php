@@ -13,6 +13,7 @@ if (!isset($_SESSION['UserID'])) {
     <?php include "../components/header.html" ?>
     <script src="../JS/reportes/getReportes.js"></script>
     <script src="../JS/reportes/deleteReportes.js"></script>
+    <script src="../JS/reportes/ticket.js"></script>
 
     <script>
         const userType = "<?= $_SESSION['UserType'] ?>";
@@ -141,7 +142,9 @@ if (!isset($_SESSION['UserID'])) {
 
                         </div>
                         <div class="modal-footer">
-                            <h5>Compra registrada</h5>
+                            <button id="btnPrintTicket" class="btn btn-primary">
+                                Imprimir ticket
+                            </button>
                         </div>
                     </div>
                 </div>

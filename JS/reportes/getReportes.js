@@ -7,6 +7,11 @@ $(document).ready(function () {
         }, 50);
     });
 
+    $('#clientName').on("input", function () {
+        const clientName = $('#clientName').val();
+        getReportes(clientName);
+    });
+
     $(document).on("click", ".btn-detalle", function () {
         const $fila = $(this).closest("tr");
         const id = $fila.data("id");
@@ -35,13 +40,18 @@ $(document).ready(function () {
     });
 });
 
-function getReportes() {
+function getReportes(clientName) {
     const dbChoice = $('#databaseSwitch').val();
+    const date = $("#date").val();
+    console.log(clientName);
+    console.log(date);
     $.get('/ferreteria/PHP/controladores/ventas/getVentas.php', 
-          { db_choice: dbChoice, action: 'getSales' })
+          { db_choice: dbChoice, clientName:clientName, date:date, action: 'getSales' })
     .done(function(response) {
         console.log("ventas recibidos:", response.ventas);
         console.log("Usando:", response.db);
+
+        console.log("Filtro:", response.filter);
 
         // 1) Seleccionamos el <tbody> y lo vaciamos
         const $tbody = $("table.table tbody");
@@ -107,6 +117,8 @@ function getReportes() {
         console.error("Respuesta del servidor:", jqXHR.responseText);
     });
 }
+
+
 
 function getVentaByID(ventaId) {
     const dbChoice = $('#databaseSwitch').val();

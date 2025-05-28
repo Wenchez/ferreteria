@@ -34,6 +34,22 @@ if (!isset($_SESSION['UserID'])) {
                     <div class="card shadow">
                         <div class="card-body">
                             <h2 class="card-title text-secondary"><i class="bi bi-receipt"></i> Ventas realizadas</h2>
+
+                            <div class="row mb-3">
+                                <div class="col-md-9">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-secondary text-white">Buscar por cliente</span>
+                                        <input id="clientName" type="text" class="form-control bg-secondary-subtle" placeholder="Nombre del cliente">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="date" class="form-select bg-secondary-subtle border border-secondary-subtle">
+                                        <option value="all" selected>Ver todos</option>
+                                        <option value="today">Del día</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <table class="table table-bordered align-middle">
                                 <thead class="table-secondary">
                                     <tr>

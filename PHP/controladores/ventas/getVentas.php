@@ -37,54 +37,76 @@
         $db = $dbConnection->selectDatabase('ferreteria');
         $coleccion = $db->selectCollection('sales');
 
-        if ($action === "getSales") {
-            // Caso 1: devolver todos los productos
-            try{
-                $documentos = $coleccion->find();
+        switch ($action) {
+            case "getSales":
+                // Caso 1: devolver todos los productos
+                $clientName = $_GET['clientName'] ?? '';
+                $date = $_GET['date'] ?? '';
 
-                $ventas = [];
-                foreach ($documentos as $venta) {
-                    $ventas[] = $venta;
+                $filter = [];
+
+                // Filtro por nombre (si se proporcionó)
+                if (!empty($clientName)) {
+                    $filter['clientName'] = new MongoDB\BSON\Regex("^$clientName", 'i');
                 }
+
+                // Filtro por fecha si es 'today'
+                if ($date === 'today') {
+                    $start = new DateTime('today', new DateTimeZone('America/Mexico_City'));
+                    $end = clone $start;
+                    $end->modify('+1 day');
+
+                    $filter['saleDate'] = [
+                        '$gte' => new MongoDB\BSON\UTCDateTime($start->getTimestamp() * 1000),
+                        '$lt'  => new MongoDB\BSON\UTCDateTime($end->getTimestamp() * 1000)
+                    ];
+                }
+
+                try {
+                    $documentos = $coleccion->find($filter);
+
+                    $ventas = [];
+                    foreach ($documentos as $venta) {
+                        $ventas[] = $venta;
+                    }
+                    echo json_encode([
+                        'filter' => $filter,
+                        'ventas' => $ventas,
+                        'db'     => $connectionType
+                    ]);
+                } catch (Exception $e) {
+                    echo json_encode("Error durante la operación: " . $e->getMessage());
+                }
+                break;
+
+            case "getSaleById":
+                // Caso 2: devolver un solo producto según su ID
+                $ventaId = $_GET['ventaId'] ?? '';
+                if (empty($ventaId)) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "No se proporcionó productId"]);
+                    exit;
+                }
+
+                $filtro = ['_id' => $ventaId];
+                $venta  = $coleccion->findOne($filtro);
+
+                if (!$venta) {
+                    http_response_code(404);
+                    echo json_encode(["error" => "Venta no encontrada"]);
+                    exit;
+                }
+
                 echo json_encode([
-                    'ventas'=>$ventas,
-                    'db'=>$connectionType
+                    'venta' => $venta,
+                    'db'    => $connectionType
                 ]);
-            }
-            catch (Exception $e){
-                echo json_encode("Error durante la operación: " . $e->getMessage());
-            }
-            exit;
-        }
-        elseif ($action === "getSaleById") {
-            // Caso 2: devolver un solo producto según su ID
-            $ventaId = $_GET['ventaId'] ?? '';
-            if (empty($ventaId)) {
+                break;
+
+            default:
                 http_response_code(400);
-                echo json_encode(["error" => "No se proporcionó productId"]);
-                exit;
-            }
-
-            // Construir el filtro y los datos a actualizar
-            $filtro = ['_id' => $ventaId];
-            $venta = $coleccion->findOne($filtro);
-
-            if (!$venta) {
-                http_response_code(404);
-                echo json_encode(["error" => "Venta no encontrada"]);
-                exit;
-            }
-
-            echo json_encode([
-                'venta' => $venta,
-                'db' => $connectionType
-            ]);
-            exit;
-        }
-        else {
-            http_response_code(400);
-            echo json_encode(["error" => "Acción inválida"]);
-            exit;
+                echo json_encode(["error" => "Acción inválida"]);
+                break;
         }
     }
     catch (Exception $e) {
